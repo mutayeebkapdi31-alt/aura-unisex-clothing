@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}AURA STUDIOS | High Fashion Unisex Streetwear & Luxury Pret{% endblock %}</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✦</text></svg>">
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <!-- 1. ANNOUNCEMENT MARQUEE BAR (Bonkers Vibe) -->
+  <div class="announcement-bar">
+    <div class="marquee-track">
+      <div class="marquee-content">
+        <span>DROP 04 IS LIVE • ARCHITECTURAL STREETWEAR</span>
+        <span>FREE WORLDWIDE SHIPPING OVER $150</span>
+        <span>USE CODE: AURA20 FOR 20% OFF</span>
+        <span>HEAVYWEIGHT 460 GSM FRENCH TERRY</span>
+        <span>GENDERLESS SILHOUETTES FOR EVERYONE</span>
+        <span>LIMITED EDITION RUN • NO RESTOCKS</span>
+      </div>
+      <div class="marquee-content">
+        <span>DROP 04 IS LIVE • ARCHITECTURAL STREETWEAR</span>
+        <span>FREE WORLDWIDE SHIPPING OVER $150</span>
+        <span>USE CODE: AURA20 FOR 20% OFF</span>
+        <span>HEAVYWEIGHT 460 GSM FRENCH TERRY</span>
+        <span>GENDERLESS SILHOUETTES FOR EVERYONE</span>
+        <span>LIMITED EDITION RUN • NO RESTOCKS</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. STICKY HEADER (Zara Minimalist + Brutalist Fashion) -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <!-- Logo -->
+      <a href="{{ url_for('index') }}" class="logo-brand">
+        AURA <span style="font-weight: 300;">STUDIOS</span>
+        <span class="logo-badge">UNISEX</span>
+      </a>
+
+      <!-- Navigation -->
+      <nav class="nav-container">
+        <ul class="nav-links">
+          <li><a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' and not request.args.get('category') %}active{% endif %}">Collection</a></li>
+          <li><a href="{{ url_for('index', category='Shirts') }}" class="nav-link {% if request.args.get('category') == 'Shirts' %}active{% endif %}">Shirts</a></li>
+          <li><a href="{{ url_for('index', category='T-Shirts') }}" class="nav-link {% if request.args.get('category') == 'T-Shirts' %}active{% endif %}">T-Shirts</a></li>
+          <li><a href="{{ url_for('index', category='Pants') }}" class="nav-link {% if request.args.get('category') == 'Pants' %}active{% endif %}">Pants</a></li>
+          <li><a href="{{ url_for('index', category='Hoodies') }}" class="nav-link {% if request.args.get('category') == 'Hoodies' %}active{% endif %}">Hoodies</a></li>
+          <li><a href="{{ url_for('index', category='Sweatshirts') }}" class="nav-link {% if request.args.get('category') == 'Sweatshirts' %}active{% endif %}">Sweatshirts</a></li>
+          <li><a href="{{ url_for('lookbook') }}" class="nav-link {% if request.endpoint == 'lookbook' %}active{% endif %}">Lookbook</a></li>
+        </ul>
+      </nav>
+
+      <!-- Action Buttons -->
+      <div class="header-actions">
+        <!-- Fit Advisor Trigger -->
+        <button class="btn-admin-pill" onclick="openFitAdvisor()" title="Find Your Fit">
+          <i data-lucide="sparkles" style="width: 14px; height: 14px; color: var(--accent-neon);"></i>
+          <span>Fit Advisor</span>
+        </button>
+
+        <!-- Wishlist -->
+        <button class="action-btn" onclick="openWishlistDrawer()" title="Wishlist">
+          <i data-lucide="heart" style="width: 18px; height: 18px;"></i>
+          <span class="badge-count" id="headerWishlistCount" style="display: none;">0</span>
+        </button>
+
+        <!-- Cart Drawer Toggle -->
+        <button class="action-btn" onclick="openCartDrawer()" title="Bag">
+          <i data-lucide="shopping-bag" style="width: 18px; height: 18px;"></i>
+          <span class="badge-count" id="headerCartCount" style="display: none;">0</span>
+        </button>
+
+        <!-- User Profile or Login -->
+        {% if current_user %}
+          <a href="{{ url_for('account') }}" class="action-btn" title="My Account">
+            <i data-lucide="user-check" style="width: 18px; height: 18px; color: var(--accent-neon);"></i>
+          </a>
+        {% else %}
+          <button class="action-btn" onclick="openAuthModal()" title="Account">
+            <i data-lucide="user" style="width: 18px; height: 18px;"></i>
+          </button>
+        {% endif %}
+
+        <!-- Admin Portal Direct Link -->
+        <a href="{{ url_for('admin_portal') }}" class="btn-admin-pill" style="border-color: rgba(255,255,255,0.2);">
+          <i data-lucide="shield" style="width: 13px; height: 13px;"></i>
+          <span>Admin</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 3. MAIN CONTENT BODY -->
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- 4. SLIDE-OUT CART DRAWER -->
+  <div class="cart-drawer-overlay" id="cartDrawerOverlay"></div>
+  <aside class="side-drawer" id="cartDrawer">
+    <div class="drawer-header">
+      <div class="drawer-title">
+        <i data-lucide="shopping-bag" style="color: var(--accent-neon); width: 22px;"></i>
+        <span>Shopping Bag</span>
+      </div>
+      <button class="drawer-close-btn" id="cartCloseBtn">✕</button>
+    </div>
+
+    <!-- Free Shipping Progress Tracker -->
+    <div class="shipping-progress-container">
+      <div class="shipping-status-text" id="shippingStatusMsg">
+        Add $150.00 for FREE Worldwide Express Shipping
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="shippingProgressFill" style="width: 0%;"></div>
+      </div>
+    </div>
+
+    <!-- Cart Items Container -->
+    <div class="drawer-content" id="cartItemsList">
+      <!-- Injected by JavaScript -->
+    </div>
+
+    <!-- Empty Cart State -->
+    <div id="cartEmptyState" style="display: none; padding: 4rem 2rem; text-align: center;">
+      <i data-lucide="package-open" style="width: 56px; height: 56px; color: var(--text-muted); margin: 0 auto 1.5rem;"></i>
+      <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Your Bag is Empty</h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 2rem;">Explore the latest unisex drops to fill your wardrobe.</p>
+      <button class="btn-primary" onclick="closeCartDrawer()">Shop New Drops</button>
+    </div>
+
+    <!-- Cart Footer & Totals -->
+    <div class="drawer-footer" id="cartDrawerFooter">
+      <div class="promo-row">
+        <input type="text" class="promo-input" id="promoCodeInput" placeholder="PROMO CODE (e.g. AURA20)">
+        <button class="btn-apply-promo" onclick="applyPromoCode()">Apply</button>
+      </div>
+
+      <div class="cost-row">
+        <span>Subtotal</span>
+        <span id="cartSubtotalDisplay">$0.00</span>
+      </div>
+      <div class="cost-row" id="cartDiscountRow" style="display: none; color: var(--accent-neon);">
+        <span>Discount</span>
+        <span id="cartDiscountValue">-$0.00</span>
+      </div>
+      <div class="cost-row">
+        <span>Worldwide Shipping</span>
+        <span id="cartShippingDisplay">$0.00</span>
+      </div>
+      <div class="cost-row total-row">
+        <span>Estimated Total</span>
+        <span id="cartTotalDisplay">$0.00</span>
+      </div>
+
+      <a href="{{ url_for('checkout') }}" class="btn-primary btn-checkout-drawer">
+        <span>Checkout Securely</span>
+        <i data-lucide="arrow-right" style="width: 18px; height: 18px;"></i>
+      </a>
+    </div>
+  </aside>
+
+  <!-- 5. SLIDE-OUT WISHLIST DRAWER -->
+  <div class="wishlist-drawer-overlay" id="wishlistDrawerOverlay"></div>
+  <aside class="side-drawer" id="wishlistDrawer">
+    <div class="drawer-header">
+      <div class="drawer-title">
+        <i data-lucide="heart" style="color: #ff3366; width: 22px;"></i>
+        <span>Saved Items</span>
+      </div>
+      <button class="drawer-close-btn" id="wishlistCloseBtn">✕</button>
+    </div>
+
+    <div class="drawer-content" id="wishlistItemsList">
+      <!-- Injected by JS -->
+    </div>
+
+    <div id="wishlistEmptyState" style="display: none; padding: 4rem 2rem; text-align: center;">
+      <i data-lucide="heart-off" style="width: 56px; height: 56px; color: var(--text-muted); margin: 0 auto 1.5rem;"></i>
+      <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Your Wishlist is Empty</h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 2rem;">Save your favorite silhouettes to keep an eye on stock.</p>
+      <button class="btn-secondary" onclick="closeWishlistDrawer()">Explore Catalog</button>
+    </div>
+  </aside>
+
+  <!-- 6. GLOBAL BACKDROP -->
+  <div class="modal-backdrop" id="modalBackdrop"></div>
+
+  <!-- 7. QUICK VIEW MODAL -->
+  <div class="modal-window" id="quickViewModal">
+    <button class="modal-close-trigger" onclick="closeQuickView()">✕</button>
+    <div class="quick-view-layout">
+      <div class="quick-view-gallery">
+        <img id="qvImg" src="" alt="Product Detail">
+      </div>
+      <div class="quick-view-body">
+        <div style="font-family: var(--font-tech); font-size: 0.75rem; color: var(--accent-neon); text-transform: uppercase; margin-bottom: 0.4rem;" id="qvCategory">
+          STREETWEAR • UNISEX
+        </div>
+        <h2 style="font-size: 1.6rem; margin-bottom: 0.75rem;" id="qvTitle">Product Name</h2>
+        <div style="font-family: var(--font-tech); font-size: 1.4rem; font-weight: 800; margin-bottom: 1.25rem;" id="qvPrice">$0.00</div>
+        
+        <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;" id="qvDesc"></p>
+
+        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; font-family: var(--font-tech); font-size: 0.75rem;">
+          <span style="background: rgba(255,255,255,0.06); padding: 0.35rem 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);" id="qvFabric">
+            460 GSM French Terry
+          </span>
+          <span style="background: rgba(255,255,255,0.06); padding: 0.35rem 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);" id="qvFit">
+            Oversized Boxy Fit
+          </span>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+          <div style="font-family: var(--font-tech); font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem;">
+            Select Unisex Size:
+          </div>
+          <div id="qvSizes" style="display: flex; gap: 0.5rem;"></div>
+        </div>
+
+        <button class="btn-primary" id="qvAddBtn" style="width: 100%;">
+          <span>Add to Bag</span>
+          <i data-lucide="plus" style="width: 18px; height: 18px;"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. UNISEX FIT ADVISOR MODAL -->
+  <div class="modal-window" id="fitAdvisorModal" style="max-width: 600px;">
+    <button class="modal-close-trigger" onclick="closeFitAdvisor()">✕</button>
+    <div class="fit-advisor-box">
+      <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+        <i data-lucide="sparkles" style="color: var(--accent-neon); width: 28px; height: 28px;"></i>
+        <h2 style="font-size: 1.5rem;">Unisex Size & Fit Advisor</h2>
+      </div>
+      <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.75rem;">
+        Because all AURA garments are gender-neutral with signature boxy drop shoulders, use our algorithmic sizing calculator for your desired drape.
+      </p>
+
+      <!-- Height Slider -->
+      <div class="fit-slider-group">
+        <div class="fit-slider-label">
+          <span>Your Height</span>
+          <span id="heightValue" style="color: var(--accent-neon);">175 cm (5'9")</span>
+        </div>
+        <input type="range" class="fit-range-input" id="heightSlider" min="150" max="205" value="175">
+      </div>
+
+      <!-- Weight Slider -->
+      <div class="fit-slider-group">
+        <div class="fit-slider-label">
+          <span>Your Weight</span>
+          <span id="weightValue" style="color: var(--accent-neon);">70 kg (154 lbs)</span>
+        </div>
+        <input type="range" class="fit-range-input" id="weightSlider" min="45" max="120" value="70">
+      </div>
+
+      <!-- Fit Aesthetic Preference -->
+      <div style="margin-top: 1.5rem;">
+        <div style="font-family: var(--font-tech); font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.6rem;">
+          Preferred Aesthetic Silhouette:
+        </div>
+        <div style="display: flex; gap: 1rem;">
+          <label style="flex: 1; display: flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.05); padding: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); cursor: pointer; font-size: 0.8rem;">
+            <input type="radio" name="fitPref" value="snug">
+            <span>Tailored Clean</span>
+          </label>
+          <label style="flex: 1; display: flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.05); padding: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); cursor: pointer; font-size: 0.8rem;">
+            <input type="radio" name="fitPref" value="boxy" checked>
+            <span>Boxy Oversized</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Recommendation Display -->
+      <div class="recommendation-result">
+        <div style="font-family: var(--font-tech); font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted);">
+          Your Recommended Unisex Size
+        </div>
+        <div class="rec-size-badge" id="recSizeDisplay">L</div>
+        <p style="font-size: 0.82rem; color: var(--text-main);" id="recSizeNote">
+          We selected Size L for an authentic streetwear drop-shoulder drape.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. AUTH / SIGN IN MODAL -->
+  <div class="modal-window" id="authModal" style="max-width: 460px;">
+    <button class="modal-close-trigger" onclick="closeAuthModal()">✕</button>
+    <div style="padding: 2.5rem;">
+      <h2 style="font-size: 1.7rem; margin-bottom: 0.5rem; text-align: center;">Welcome to AURA</h2>
+      <p style="font-size: 0.85rem; color: var(--text-muted); text-align: center; margin-bottom: 2rem;">
+        Sign in to track orders, manage wishlist, and gain VIP drop access.
+      </p>
+
+      <form id="authLoginForm" onsubmit="handleAuthSubmit(event)">
+        <div style="margin-bottom: 1.25rem;">
+          <label style="display: block; font-family: var(--font-tech); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 0.4rem;">Email</label>
+          <input type="email" id="loginEmail" required class="promo-input" style="width: 100%; text-transform: none;" placeholder="name@domain.com" value="user@aurastudios.com">
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+          <label style="display: block; font-family: var(--font-tech); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 0.4rem;">Password</label>
+          <input type="password" id="loginPassword" required class="promo-input" style="width: 100%; text-transform: none;" placeholder="••••••••" value="user">
+        </div>
+        <button type="submit" class="btn-primary" style="width: 100%; margin-bottom: 1rem;">Sign In</button>
+      </form>
+
+      <div style="font-size: 0.8rem; color: var(--text-muted); text-align: center; border-top: 1px solid var(--border-subtle); padding-top: 1rem;">
+        Demo Customer: <code>user@aurastudios.com</code> / <code>user</code><br>
+        Demo Admin: <code>admin@aurastudios.com</code> / <code>admin</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10. TOAST CONTAINER -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- 11. LUXURY FOOTER (Zara / Editorial Blackout) -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top-grid">
+        <div>
+          <div class="logo-brand" style="margin-bottom: 1.25rem;">AURA STUDIOS</div>
+          <p style="font-size: 0.85rem; line-height: 1.6; max-width: 340px; margin-bottom: 1.5rem;">
+            An independent unisex luxury pret and streetwear laboratory. Dedicated to gender-neutral silhouettes, 460 GSM heavyweight textiles, and architectural drape.
+          </p>
+          <div style="display: flex; gap: 0.75rem;">
+            <a href="#" class="action-btn" style="width: 36px; height: 36px;"><i data-lucide="instagram" style="width: 16px;"></i></a>
+            <a href="#" class="action-btn" style="width: 36px; height: 36px;"><i data-lucide="twitter" style="width: 16px;"></i></a>
+            <a href="#" class="action-btn" style="width: 36px; height: 36px;"><i data-lucide="youtube" style="width: 16px;"></i></a>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="footer-col-title">Collections</h4>
+          <ul class="footer-nav-list">
+            <li><a href="{{ url_for('index', category='Shirts') }}">Boxy Shirts</a></li>
+            <li><a href="{{ url_for('index', category='T-Shirts') }}">Heavyweight T-Shirts</a></li>
+            <li><a href="{{ url_for('index', category='Pants') }}">Parachute & Balloon Pants</a></li>
+            <li><a href="{{ url_for('index', category='Hoodies') }}">Heavy Box Hoodies</a></li>
+            <li><a href="{{ url_for('index', category='Sweatshirts') }}">Drop-Shoulder Sweatshirts</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-col-title">Customer Care</h4>
+          <ul class="footer-nav-list">
+            <li><a href="#" onclick="openFitAdvisor(); return false;">Find Your Fit</a></li>
+            <li><a href="{{ url_for('checkout') }}">Worldwide Shipping</a></li>
+            <li><a href="#">Returns & Exchanges</a></li>
+            <li><a href="#">Order Tracking</a></li>
+            <li><a href="#">Sustainability & GSM Specs</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-col-title">VIP Drop Club</h4>
+          <p style="font-size: 0.82rem; margin-bottom: 1rem;">Get 48h priority access to Drop 05 before public release.</p>
+          <form onsubmit="event.preventDefault(); showToast('Subscribed to VIP Drops!', 'success');" style="display: flex; gap: 0.5rem;">
+            <input type="email" placeholder="Your email address" class="promo-input" style="font-size: 0.75rem;" required>
+            <button type="submit" class="btn-primary" style="padding: 0 1rem; font-size: 0.75rem;">Join</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="footer-bottom-row">
+        <div>© 2026 AURA STUDIOS INC. ALL RIGHTS RESERVED.</div>
+        <div style="display: flex; gap: 1.5rem;">
+          <a href="#">PRIVACY POLICY</a>
+          <a href="#">TERMS OF SERVICE</a>
+          <a href="{{ url_for('admin_portal') }}">ADMIN CONSOLE</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Quick Auth Form Handler
+    async function handleAuthSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`Welcome back, ${data.user.full_name}!`, 'success');
+          setTimeout(() => {
+            if (data.user.role === 'admin') {
+              window.location.href = '/admin';
+            } else {
+              window.location.reload();
+            }
+          }, 800);
+        } else {
+          showToast(data.error || 'Login failed', 'error');
+        }
+      } catch (err) {
+        showToast('Login error occurred', 'error');
+      }
+    }
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} | AURA STUDIOS{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 3rem 0 6rem;">
+  <!-- Breadcrumb -->
+  <div style="font-family: var(--font-tech); font-size: 0.78rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 2rem;">
+    <a href="{{ url_for('index') }}" style="color: var(--text-secondary);">Home</a> / 
+    <a href="{{ url_for('index', category=product.category) }}" style="color: var(--text-secondary);">{{ product.category }}</a> / 
+    <span style="color: var(--accent-neon);">{{ product.name }}</span>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 4rem; align-items: start;">
+    <!-- Gallery Column -->
+    <div>
+      <div style="position: sticky; top: 100px;">
+        <!-- Main Interactive Image -->
+        <div style="position: relative; aspect-ratio: 3/4; border-radius: var(--radius-md); overflow: hidden; background: #000; border: 1px solid var(--border-subtle); margin-bottom: 1rem;">
+          <img id="mainProductImage" src="{{ product.images[0] }}" alt="{{ product.name }}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease;">
+          
+          {% if product.badge %}
+            <div style="position: absolute; top: 1rem; left: 1rem;">
+              <span class="product-badge badge-drop">{{ product.badge }}</span>
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- Thumbnails Gallery -->
+        <div style="display: flex; gap: 1rem;">
+          {% for img_url in product.images %}
+            <div onclick="document.getElementById('mainProductImage').src = '{{ img_url }}'; document.querySelectorAll('.thumb-item').forEach(t => t.style.borderColor = 'var(--border-subtle)'); this.style.borderColor = 'var(--accent-neon)';"
+                 class="thumb-item"
+                 style="width: 80px; height: 100px; border-radius: var(--radius-sm); overflow: hidden; cursor: pointer; border: 2px solid {% if loop.first %}var(--accent-neon){% else %}var(--border-subtle){% endif %}; background: #000;">
+              <img src="{{ img_url }}" alt="Thumbnail" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Product Purchasing Info Column -->
+    <div>
+      <!-- Fit Badges -->
+      <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
+        <span style="font-family: var(--font-tech); font-size: 0.75rem; font-weight: 700; color: var(--accent-neon); text-transform: uppercase;">
+          {{ product.category }} • {{ product.gender }} SILHOUETTE
+        </span>
+        <span style="font-size: 0.75rem; color: var(--text-muted);">✦</span>
+        <span style="font-family: var(--font-tech); font-size: 0.75rem; color: #fff;">
+          ★ {{ product.rating }} ({{ product.reviews_count }} verified reviews)
+        </span>
+      </div>
+
+      <h1 style="font-size: clamp(2rem, 3.5vw, 2.8rem); line-height: 1.1; margin-bottom: 1rem;">
+        {{ product.name }}
+      </h1>
+
+      <div style="display: flex; align-items: baseline; gap: 1rem; margin-bottom: 2rem;">
+        <span style="font-family: var(--font-tech); font-size: 1.8rem; font-weight: 800; color: #fff;">
+          ${{ "%.2f"|format(product.price) }}
+        </span>
+        {% if product.compare_at_price %}
+          <span style="font-family: var(--font-tech); font-size: 1.2rem; color: var(--text-muted); text-decoration: line-through;">
+            ${{ "%.2f"|format(product.compare_at_price) }}
+          </span>
+          <span style="font-family: var(--font-tech); font-size: 0.8rem; color: var(--accent-neon); font-weight: 700;">
+            SAVE {{ (100 - (product.price / product.compare_at_price * 100))|round|int }}%
+          </span>
+        {% endif %}
+      </div>
+
+      <p style="font-size: 1rem; line-height: 1.6; color: var(--text-secondary); margin-bottom: 2rem;">
+        {{ product.description }}
+      </p>
+
+      <!-- Fabric & Fit Specs Cards -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2.5rem;">
+        <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); padding: 1.25rem; border-radius: var(--radius-sm);">
+          <div style="font-family: var(--font-tech); font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Fabric Engineering</div>
+          <div style="font-size: 0.95rem; font-weight: 700; color: #fff; margin-top: 0.25rem;">{{ product.fabric_weight }}</div>
+        </div>
+        <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); padding: 1.25rem; border-radius: var(--radius-sm);">
+          <div style="font-family: var(--font-tech); font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Unisex Silhouette</div>
+          <div style="font-size: 0.95rem; font-weight: 700; color: var(--accent-neon); margin-top: 0.25rem;">{{ product.fit_type }}</div>
+        </div>
+      </div>
+
+      <!-- Size Selector -->
+      <div style="margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <span style="font-family: var(--font-tech); font-size: 0.8rem; text-transform: uppercase; font-weight: 700;">
+            Select Unisex Size:
+          </span>
+          <button onclick="openFitAdvisor()" style="font-family: var(--font-tech); font-size: 0.75rem; color: var(--accent-neon); text-decoration: underline;">
+            ✦ Fit & Size Advisor
+          </button>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;" id="productDetailSizes">
+          {% for sz in product.sizes %}
+            <button class="size-pill-quick {% if loop.first %}active{% endif %}" 
+                    style="flex: none; min-width: 60px; padding: 0.75rem 1.2rem; font-size: 0.9rem;"
+                    onclick="selectDetailSize(this, '{{ sz }}')">
+              {{ sz }}
+            </button>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Quantity & Add to Cart -->
+      <div style="display: flex; gap: 1rem; margin-bottom: 2.5rem;">
+        <div class="qty-stepper" style="padding: 0.5rem 0.75rem;">
+          <button class="qty-btn" onclick="updateDetailQty(-1)" style="width: 32px; height: 32px;">−</button>
+          <span class="qty-display" id="detailQty" style="width: 40px; font-size: 1rem;">1</span>
+          <button class="qty-btn" onclick="updateDetailQty(1)" style="width: 32px; height: 32px;">+</button>
+        </div>
+
+        <button class="btn-primary" style="flex-grow: 1;" onclick="handleDetailAddToCart()">
+          <i data-lucide="shopping-bag" style="width: 18px; height: 18px;"></i>
+          <span>Add to Bag</span>
+        </button>
+
+        <button class="btn-wishlist wishlist-btn-{{ product.id }}" 
+                style="position: static; width: 54px; height: 54px;" 
+                onclick='toggleWishlist({{ product|tojson }})'
+                title="Add to Wishlist">
+          <i data-lucide="heart" style="width: 20px; height: 20px;"></i>
+        </button>
+      </div>
+
+      <!-- Express Checkout Fast Button -->
+      <button class="btn-secondary" style="width: 100%; margin-bottom: 2.5rem; justify-content: center;" onclick="handleInstantBuy()">
+        <span>Buy Now with Express Checkout</span>
+        <i data-lucide="zap" style="width: 16px; height: 16px; color: var(--accent-neon);"></i>
+      </button>
+
+      <!-- Accordion Specifications -->
+      <div style="border-top: 1px solid var(--border-subtle);">
+        <details style="padding: 1.25rem 0; border-bottom: 1px solid var(--border-subtle); cursor: pointer;">
+          <summary style="font-family: var(--font-editorial); font-weight: 700; text-transform: uppercase; font-size: 0.95rem; display: flex; justify-content: space-between;">
+            <span>Fabric & Textile Engineering</span>
+            <span>+</span>
+          </summary>
+          <div style="padding-top: 1rem; font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6;">
+            Constructed with high-tenacity yarn spun to withstand over 150 commercial wash cycles without pilling or silhouette collapse. Ribbed detailing contains 5% elastane for shape retention.
+          </div>
+        </details>
+
+        <details style="padding: 1.25rem 0; border-bottom: 1px solid var(--border-subtle); cursor: pointer;">
+          <summary style="font-family: var(--font-editorial); font-weight: 700; text-transform: uppercase; font-size: 0.95rem; display: flex; justify-content: space-between;">
+            <span>Model Height & Unisex Drape</span>
+            <span>+</span>
+          </summary>
+          <div style="padding-top: 1rem; font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6;">
+            Female model is 5'9" (175cm) wearing Size L for an exaggerated drop-shoulder look.<br>
+            Male model is 6'1" (185cm) wearing Size L for a boxy streetwear fit.
+          </div>
+        </details>
+
+        <details style="padding: 1.25rem 0; border-bottom: 1px solid var(--border-subtle); cursor: pointer;">
+          <summary style="font-family: var(--font-editorial); font-weight: 700; text-transform: uppercase; font-size: 0.95rem; display: flex; justify-content: space-between;">
+            <span>Worldwide Delivery & Free Returns</span>
+            <span>+</span>
+          </summary>
+          <div style="padding-top: 1rem; font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6;">
+            Orders dispatch within 24 hours via DHL Express. Free standard worldwide delivery on all carts above $150. Hassle-free 30-day exchange policy.
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <!-- Related Drops -->
+  {% if related %}
+    <div style="margin-top: 6rem;">
+      <div class="section-header-row">
+        <div>
+          <span class="section-label">COMPLETE THE FIT</span>
+          <h2 class="section-title">Complementary Pieces</h2>
+        </div>
+      </div>
+      <div class="products-grid">
+        {% for rel in related %}
+          <div class="product-card">
+            <div class="product-media-container">
+              <a href="{{ url_for('product_detail', product_id_or_slug=rel.slug) }}">
+                <img src="{{ rel.images[0] }}" alt="{{ rel.name }}" class="product-img img-primary">
+              </a>
+            </div>
+            <div class="product-details">
+              <div class="product-category-row">
+                <span>{{ rel.category }}</span>
+                <span class="fit-pill">{{ rel.fit_type }}</span>
+              </div>
+              <a href="{{ url_for('product_detail', product_id_or_slug=rel.slug) }}">
+                <h3 class="product-name">{{ rel.name }}</h3>
+              </a>
+              <div class="product-pricing-row">
+                <span class="price-current">${{ "%.2f"|format(rel.price) }}</span>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  let selectedDetailSize = '{{ product.sizes[0] }}';
+  let detailQty = 1;
+
+  function selectDetailSize(btn, sz) {
+    document.querySelectorAll('#productDetailSizes .size-pill-quick').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedDetailSize = sz;
+  }
+
+  function updateDetailQty(delta) {
+    detailQty = Math.max(1, detailQty + delta);
+    document.getElementById('detailQty').textContent = detailQty;
+  }
+
+  function handleDetailAddToCart() {
+    const product = {{ product|tojson }};
+    addToCart(product, selectedDetailSize, detailQty);
+  }
+
+  function handleInstantBuy() {
+    const product = {{ product|tojson }};
+    addToCart(product, selectedDetailSize, detailQty);
+    window.location.href = "{{ url_for('checkout') }}";
+  }
+</script>
+{% endblock %}

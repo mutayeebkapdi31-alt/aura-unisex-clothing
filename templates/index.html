@@ -1,0 +1,306 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- 1. HERO SECTION (Editorial Zara + Bonkers Streetwear Drop) -->
+<section class="hero-section">
+  <div class="hero-bg-media">
+    <img src="https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=2000&q=85" alt="AURA Unisex Campaign">
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="container hero-content">
+    <div class="drop-live-pill">
+      <span class="pulse-dot"></span>
+      <span>DROP 04 LIVE NOW • LIMITED EDITION RUN</span>
+    </div>
+    
+    <h1 class="hero-title">
+      NON-BINARY <br>
+      <span class="highlight-outline">SILHOUETTES.</span>
+    </h1>
+    
+    <p class="hero-description">
+      Engineered without gender boundaries. Crafted with 460 GSM heavy French Terry and technical memory textiles designed to drape flawlessly on every frame.
+    </p>
+
+    <div class="hero-cta-group">
+      <a href="#storeSection" class="btn-primary">
+        <span>Shop Drop 04</span>
+        <i data-lucide="arrow-down-right" style="width: 18px; height: 18px;"></i>
+      </a>
+      <a href="{{ url_for('lookbook') }}" class="btn-secondary">
+        <span>View Studio Campaign</span>
+      </a>
+      <button class="btn-secondary" onclick="openFitAdvisor()">
+        <i data-lucide="sparkles" style="width: 16px; height: 16px; color: var(--accent-neon);"></i>
+        <span>Fit Advisor</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- 2. CURATED CATEGORIES (Visual High Fashion Editorial Cards) -->
+<section class="container categories-showcase">
+  <div class="section-header-row">
+    <div>
+      <span class="section-label">CURATED SILHOUETTES</span>
+      <h2 class="section-title">Shop by Category</h2>
+    </div>
+    <div style="font-family: var(--font-tech); font-size: 0.85rem; color: var(--text-muted);">
+      ALL STYLES FULLY UNISEX & SIZED GENDER-NEUTRAL
+    </div>
+  </div>
+
+  <div class="category-grid">
+    <!-- 1. Shirts -->
+    <a href="{{ url_for('index', category='Shirts') }}" class="category-card">
+      <img src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=800&q=80" alt="Unisex Shirts">
+      <div class="category-card-overlay">
+        <div class="category-card-title">Shirts</div>
+        <div class="category-card-count">Camp Collar & Poplin ✦ 2 Drops</div>
+      </div>
+    </a>
+
+    <!-- 2. T-Shirts -->
+    <a href="{{ url_for('index', category='T-Shirts') }}" class="category-card">
+      <img src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80" alt="Unisex T-Shirts">
+      <div class="category-card-overlay">
+        <div class="category-card-title">T-Shirts</div>
+        <div class="category-card-count">280–300 GSM Heavy ✦ 2 Drops</div>
+      </div>
+    </a>
+
+    <!-- 3. Pants -->
+    <a href="{{ url_for('index', category='Pants') }}" class="category-card">
+      <img src="https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?auto=format&fit=crop&w=800&q=80" alt="Unisex Pants">
+      <div class="category-card-overlay">
+        <div class="category-card-title">Pants</div>
+        <div class="category-card-count">Parachute & Balloon ✦ 2 Drops</div>
+      </div>
+    </a>
+
+    <!-- 4. Hoodies -->
+    <a href="{{ url_for('index', category='Hoodies') }}" class="category-card">
+      <img src="https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=800&q=80" alt="Unisex Hoodies">
+      <div class="category-card-overlay">
+        <div class="category-card-title">Hoodies</div>
+        <div class="category-card-count">460 GSM Heavy Terry ✦ 2 Drops</div>
+      </div>
+    </a>
+
+    <!-- 5. Sweatshirts -->
+    <a href="{{ url_for('index', category='Sweatshirts') }}" class="category-card">
+      <img src="https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&w=800&q=80" alt="Unisex Sweatshirts">
+      <div class="category-card-overlay">
+        <div class="category-card-title">Sweatshirts</div>
+        <div class="category-card-count">420 GSM Drop Shoulder ✦ 2 Drops</div>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- 3. STORE & INTERACTIVE PRODUCT CATALOG -->
+<section class="container shop-section" id="storeSection">
+  <!-- Section Title -->
+  <div class="section-header-row">
+    <div>
+      <span class="section-label">AURA ARCHIVE</span>
+      <h2 class="section-title">All Unisex Releases</h2>
+    </div>
+    <div id="productsCountDisplay" style="font-family: var(--font-tech); font-size: 0.85rem; color: var(--accent-neon); font-weight: 700;">
+      Showing {{ products|length }} unisex items
+    </div>
+  </div>
+
+  <!-- Interactive Filter Toolbar -->
+  <div class="filter-toolbar">
+    <!-- Category Filter Pills -->
+    <div class="filter-pills-group">
+      <button class="filter-pill {% if active_category == 'all' %}active{% endif %}" data-category="all" onclick="selectCategoryFilter(this, 'all')">
+        All Silhouettes
+      </button>
+      <button class="filter-pill {% if active_category == 'Shirts' %}active{% endif %}" data-category="Shirts" onclick="selectCategoryFilter(this, 'Shirts')">
+        Shirts
+      </button>
+      <button class="filter-pill {% if active_category == 'T-Shirts' %}active{% endif %}" data-category="T-Shirts" onclick="selectCategoryFilter(this, 'T-Shirts')">
+        T-Shirts
+      </button>
+      <button class="filter-pill {% if active_category == 'Pants' %}active{% endif %}" data-category="Pants" onclick="selectCategoryFilter(this, 'Pants')">
+        Pants
+      </button>
+      <button class="filter-pill {% if active_category == 'Hoodies' %}active{% endif %}" data-category="Hoodies" onclick="selectCategoryFilter(this, 'Hoodies')">
+        Hoodies
+      </button>
+      <button class="filter-pill {% if active_category == 'Sweatshirts' %}active{% endif %}" data-category="Sweatshirts" onclick="selectCategoryFilter(this, 'Sweatshirts')">
+        Sweatshirts
+      </button>
+    </div>
+
+    <!-- Search & Sort Controls -->
+    <div class="filter-controls-right">
+      <div class="search-input-wrapper">
+        <i data-lucide="search" class="search-icon" style="width: 15px; height: 15px;"></i>
+        <input type="text" id="storeSearchInput" class="search-input" placeholder="Search style, GSM, or drop...">
+      </div>
+
+      <select id="storeSortSelect" class="sort-select">
+        <option value="featured">Featured Drops</option>
+        <option value="price_asc">Price: Low to High</option>
+        <option value="price_desc">Price: High to Low</option>
+        <option value="rating">Highest Rated</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Products Grid -->
+  <div class="products-grid" id="productsGridContainer">
+    {% for product in products %}
+      <div class="product-card" 
+           data-id="{{ product.id }}"
+           data-name="{{ product.name }}"
+           data-category="{{ product.category }}"
+           data-price="{{ product.price }}"
+           data-badge="{{ product.badge or '' }}"
+           data-fit="{{ product.fit_type }}">
+        
+        <!-- Media Container (Dual Image Flip) -->
+        <div class="product-media-container">
+          <!-- Badges -->
+          <div class="badge-stack">
+            {% if product.badge %}
+              <span class="product-badge {% if product.badge == 'DROP 04' %}badge-drop{% elif product.badge == 'LIMITED' or product.badge == 'EXCLUSIVE' %}badge-limited{% else %}badge-gsm{% endif %}">
+                {{ product.badge }}
+              </span>
+            {% endif %}
+            <span class="product-badge badge-gsm">{{ product.fabric_weight.split(' ')[0] }} GSM</span>
+          </div>
+
+          <!-- Wishlist Toggle -->
+          <button class="btn-wishlist wishlist-btn-{{ product.id }}" 
+                  onclick='toggleWishlist({{ product|tojson }})'
+                  title="Save to Wishlist">
+            <i data-lucide="heart" style="width: 16px; height: 16px;"></i>
+          </button>
+
+          <!-- Images -->
+          <a href="{{ url_for('product_detail', product_id_or_slug=product.slug) }}">
+            <img src="{{ product.images[0] }}" alt="{{ product.name }}" class="product-img img-primary">
+            {% if product.images|length > 1 %}
+              <img src="{{ product.images[1] }}" alt="{{ product.name }} detail" class="product-img img-secondary">
+            {% endif %}
+          </a>
+
+          <!-- Hover Quick Size Add Drawer (Bonkers Urban Feature) -->
+          <div class="quick-add-drawer">
+            <div class="quick-size-label">
+              <span>Quick Add Size</span>
+              <button onclick='openQuickView({{ product|tojson }})' style="text-decoration: underline; color: #fff;">Quick View ↗</button>
+            </div>
+            <div class="quick-sizes-list">
+              {% for sz in product.sizes %}
+                <button class="size-pill-quick" onclick='addToCart({{ product|tojson }}, "{{ sz }}", 1)'>
+                  {{ sz }}
+                </button>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Details -->
+        <div class="product-details">
+          <div class="product-category-row">
+            <span>{{ product.category }}</span>
+            <span class="fit-pill">{{ product.fit_type }}</span>
+          </div>
+
+          <a href="{{ url_for('product_detail', product_id_or_slug=product.slug) }}">
+            <h3 class="product-name">{{ product.name }}</h3>
+          </a>
+
+          <div class="product-pricing-row">
+            <span class="price-current">${{ "%.2f"|format(product.price) }}</span>
+            {% if product.compare_at_price %}
+              <span class="price-compare">${{ "%.2f"|format(product.compare_at_price) }}</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- 4. EDITORIAL BRAND MANIFESTO (Zara Studio Style) -->
+<section style="background: #000; border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); padding: 6rem 0;">
+  <div class="container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;">
+    <div>
+      <span class="section-label">THE ARCHITECTURAL MANIFESTO</span>
+      <h2 style="font-size: clamp(2.4rem, 5vw, 4rem); margin-bottom: 1.5rem; line-height: 1.05;">
+        CLOTHING <br>WITHOUT BINARY.
+      </h2>
+      <p style="font-size: 1.05rem; color: #94a3b8; line-height: 1.7; margin-bottom: 2rem;">
+        Fashion has spent a century dividing bodies into rigid gender categories. At AURA, we engineer patterns strictly around drape, drape weight, and structural volume. A 460 GSM hoodie hangs with the same sculptural grace regardless of who wears it.
+      </p>
+      <div style="display: flex; gap: 2.5rem; font-family: var(--font-tech);">
+        <div>
+          <div style="font-size: 2.2rem; font-weight: 800; color: var(--accent-neon);">460</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">GSM Heavy Terry</div>
+        </div>
+        <div>
+          <div style="font-size: 2.2rem; font-weight: 800; color: #fff;">100%</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Gender Neutral</div>
+        </div>
+        <div>
+          <div style="font-size: 2.2rem; font-weight: 800; color: var(--accent-orange);">04</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Current Drop</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="position: relative; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border-subtle);">
+      <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1000&q=80" alt="Unisex Fashion Studio">
+    </div>
+  </div>
+</section>
+
+<!-- 5. STREETWEAR COMMUNITY REVIEWS -->
+<section class="container" style="padding: 6rem 0;">
+  <div class="section-header-row" style="text-align: center; justify-content: center; flex-direction: column;">
+    <span class="section-label">COMMUNITY VOICES</span>
+    <h2 class="section-title">Worn Worldwide</h2>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: 2rem;">
+    <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); padding: 2rem; border-radius: var(--radius-md);">
+      <div style="color: var(--accent-neon); margin-bottom: 1rem;">★★★★★</div>
+      <p style="font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem; color: #cbd5e1;">
+        "The 460 GSM Box Hoodie has the most insane drape I've ever experienced. Super heavy, hood stands tall without flopping. Fits my partner and me equally well."
+      </p>
+      <div style="display: flex; justify-content: space-between; font-family: var(--font-tech); font-size: 0.8rem;">
+        <span style="font-weight: 700; color: #fff;">KAIREN M. • BERLIN</span>
+        <span style="color: var(--accent-neon);">Verified Buyer</span>
+      </div>
+    </div>
+
+    <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); padding: 2rem; border-radius: var(--radius-md);">
+      <div style="color: var(--accent-neon); margin-bottom: 1rem;">★★★★★</div>
+      <p style="font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem; color: #cbd5e1;">
+        "Better than Balenciaga and Bonkers. The Parachute pants with adjustable bungee drawcords at the hem are unbelievable. Quality is 10/10."
+      </p>
+      <div style="display: flex; justify-content: space-between; font-family: var(--font-tech); font-size: 0.8rem;">
+        <span style="font-weight: 700; color: #fff;">JORDAN T. • TOKYO</span>
+        <span style="color: var(--accent-neon);">Verified Buyer</span>
+      </div>
+    </div>
+
+    <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); padding: 2rem; border-radius: var(--radius-md);">
+      <div style="color: var(--accent-neon); margin-bottom: 1rem;">★★★★★</div>
+      <p style="font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem; color: #cbd5e1;">
+        "Zara styling meets heavy-duty streetwear fabric. Applied code AURA20 at checkout and got 20% off. Shipped to London in 3 days."
+      </p>
+      <div style="display: flex; justify-content: space-between; font-family: var(--font-tech); font-size: 0.8rem;">
+        <span style="font-weight: 700; color: #fff;">ELENA R. • LONDON</span>
+        <span style="color: var(--accent-neon);">Verified Buyer</span>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

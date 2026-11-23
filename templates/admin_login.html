@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Console • Executive Sign In | AURA STUDIOS{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 6rem 0 8rem; display: flex; justify-content: center;">
+  <div style="width: 100%; max-width: 480px; background: var(--bg-surface); border: 1px solid var(--border-active); border-radius: var(--radius-lg); padding: 3rem 2.5rem; box-shadow: 0 20px 50px rgba(0,0,0,0.6);">
+    <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 1.5rem;">
+      <i data-lucide="shield" style="width: 28px; height: 28px; color: var(--accent-neon);"></i>
+      <span style="font-family: var(--font-editorial); font-size: 1.4rem; font-weight: 800;">AURA EXECUTIVE</span>
+    </div>
+
+    <h1 style="font-size: 1.8rem; text-align: center; margin-bottom: 0.5rem;">Admin Access</h1>
+    <p style="font-size: 0.85rem; color: var(--text-muted); text-align: center; margin-bottom: 2rem;">
+      Enter executive credentials to manage product catalogs, inventory, and order fulfillment.
+    </p>
+
+    <form onsubmit="handleAdminLogin(event)">
+      <div style="margin-bottom: 1.25rem;">
+        <label style="display: block; font-family: var(--font-tech); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 0.4rem;">Admin Email</label>
+        <input type="email" id="adminEmail" required class="promo-input" style="width: 100%; text-transform: none;" value="admin@aurastudios.com">
+      </div>
+
+      <div style="margin-bottom: 1.75rem;">
+        <label style="display: block; font-family: var(--font-tech); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 0.4rem;">Master Password</label>
+        <input type="password" id="adminPassword" required class="promo-input" style="width: 100%; text-transform: none;" value="admin">
+      </div>
+
+      <button type="submit" id="adminLoginBtn" class="btn-primary" style="width: 100%; padding: 1.1rem; justify-content: center; margin-bottom: 1.5rem;">
+        <span>Authenticate & Enter</span>
+        <i data-lucide="arrow-right" style="width: 18px;"></i>
+      </button>
+    </form>
+
+    <div style="background: rgba(217, 253, 2, 0.05); border: 1px solid var(--border-neon); border-radius: var(--radius-sm); padding: 1rem; font-family: var(--font-tech); font-size: 0.78rem; text-align: center; color: var(--text-secondary);">
+      Default Demo Credentials:<br>
+      Email: <strong style="color: #fff;">admin@aurastudios.com</strong><br>
+      Password: <strong style="color: #fff;">admin</strong>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  async function handleAdminLogin(e) {
+    e.preventDefault();
+    const btn = document.getElementById('adminLoginBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span>Verifying...</span>';
+
+    const email = document.getElementById('adminEmail').value;
+    const password = document.getElementById('adminPassword').value;
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (data.success && data.user.role === 'admin') {
+        showToast('Executive authorization granted', 'success');
+        setTimeout(() => window.location.href = '/admin', 600);
+      } else if (data.success) {
+        showToast('Logged in as customer. Admin role required.', 'error');
+        btn.disabled = false;
+        btn.innerHTML = '<span>Authenticate & Enter</span>';
+      } else {
+        showToast(data.error || 'Authentication rejected', 'error');
+        btn.disabled = false;
+        btn.innerHTML = '<span>Authenticate & Enter</span>';
+      }
+    } catch (err) {
+      showToast('Login server error', 'error');
+      btn.disabled = false;
+      btn.innerHTML = '<span>Authenticate & Enter</span>';
+    }
+  }
+</script>
+{% endblock %}

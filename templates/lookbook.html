@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Studio Lookbook • Drop 04 Campaign | AURA STUDIOS{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 4rem 0 7rem;">
+  <div class="section-header-row" style="margin-bottom: 3.5rem;">
+    <div>
+      <span class="section-label">STUDIO CAMPAIGN • DROP 04</span>
+      <h1 class="section-title">The Non-Binary Archive</h1>
+    </div>
+    <p style="max-width: 500px; font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6;">
+      Captured on 35mm film in an abandoned brutalist pavilion. Exploring weight, fluid movement, and oversized silhouettes engineered without gender specifications.
+    </p>
+  </div>
+
+  <!-- Editorial Grid with Hotspot Overlays -->
+  <div style="display: flex; flex-direction: column; gap: 4rem;">
+    <!-- Look 01 -->
+    <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 2.5rem; align-items: center; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); overflow: hidden; padding: 2rem;">
+      <div style="position: relative; border-radius: var(--radius-md); overflow: hidden; aspect-ratio: 16/10;">
+        <img src="https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=1400&q=80" alt="Look 01" style="width: 100%; height: 100%; object-fit: cover;">
+      </div>
+      <div>
+        <div style="font-family: var(--font-tech); font-size: 0.8rem; color: var(--accent-neon); font-weight: 700; margin-bottom: 0.5rem;">LOOK 01 / HEAVYWEIGHT MONOCHROME</div>
+        <h2 style="font-size: 2rem; margin-bottom: 1rem;">Acid Charcoal Box Hoodie & Parachute Cargo</h2>
+        <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 1.5rem;">
+          Worn together to create a continuous drape line from shoulder drop to balloon hem toggles. Hand distressed with natural stone enzymes.
+        </p>
+        <div style="display: flex; gap: 1rem;">
+          <a href="{{ url_for('product_detail', product_id_or_slug='heavyweight-box-hoodie-acid-charcoal') }}" class="btn-primary" style="padding: 0.8rem 1.4rem; font-size: 0.85rem;">
+            Shop Box Hoodie ($110)
+          </a>
+          <a href="{{ url_for('product_detail', product_id_or_slug='raw-edge-parachute-cargo-black') }}" class="btn-secondary" style="padding: 0.8rem 1.4rem; font-size: 0.85rem;">
+            Shop Parachute ($125)
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Look 02 -->
+    <div style="display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 2.5rem; align-items: center; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); overflow: hidden; padding: 2rem;">
+      <div>
+        <div style="font-family: var(--font-tech); font-size: 0.8rem; color: var(--accent-orange); font-weight: 700; margin-bottom: 0.5rem;">LOOK 02 / HIGH EDITORIAL TAILORING</div>
+        <h2 style="font-size: 2rem; margin-bottom: 1rem;">Double-Breasted Trench in Camel Oat</h2>
+        <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 1.5rem;">
+          Unstructured wool-blend twill with deep storm flaps. Cut with dropped armholes to comfortably layer over our 460 GSM hoodies or worn bare over tee for minimalist drama.
+        </p>
+        <a href="{{ url_for('product_detail', product_id_or_slug='minimalist-double-breasted-trench-camel') }}" class="btn-primary" style="padding: 0.8rem 1.4rem; font-size: 0.85rem;">
+          Shop Camel Trench ($220)
+        </a>
+      </div>
+      <div style="position: relative; border-radius: var(--radius-md); overflow: hidden; aspect-ratio: 16/10;">
+        <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=1400&q=80" alt="Look 02" style="width: 100%; height: 100%; object-fit: cover;">
+      </div>
+    </div>
+
+    <!-- Look 03 -->
+    <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 2.5rem; align-items: center; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); overflow: hidden; padding: 2rem;">
+      <div style="position: relative; border-radius: var(--radius-md); overflow: hidden; aspect-ratio: 16/10;">
+        <img src="https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=1400&q=80" alt="Look 03" style="width: 100%; height: 100%; object-fit: cover;">
+      </div>
+      <div>
+        <div style="font-family: var(--font-tech); font-size: 0.8rem; color: var(--accent-neon); font-weight: 700; margin-bottom: 0.5rem;">LOOK 03 / CYBERNETIC STREETWEAR</div>
+        <h2 style="font-size: 2rem; margin-bottom: 1rem;">Liquid Chrome Puffer Bomber</h2>
+        <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 1.5rem;">
+          Metallic foil poly-tech with thermore insulation. High gloss reflection engineered for night shoots and winter city terrain.
+        </p>
+        <a href="{{ url_for('product_detail', product_id_or_slug='cyberpunk-puffer-bomber-silver') }}" class="btn-primary" style="padding: 0.8rem 1.4rem; font-size: 0.85rem;">
+          Shop Chrome Puffer ($195)
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
