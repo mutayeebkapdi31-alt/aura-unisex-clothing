@@ -1,111 +1,54 @@
 {% extends "base.html" %}
 
-{% block title %}My Account • Orders & Archive | AURA STUDIOS{% endblock %}
+{% block title %}My account | AURA STUDIOS{% endblock %}
 
 {% block content %}
-<div class="container" style="padding: 4rem 0 7rem;">
-  <!-- Account Header -->
-  <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 2.5rem; margin-bottom: 3.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
-    <div style="display: flex; align-items: center; gap: 1.5rem;">
-      <div style="width: 72px; height: 72px; border-radius: 50%; background: #000; border: 2px solid var(--accent-neon); display: flex; align-items: center; justify-content: center; font-family: var(--font-editorial); font-size: 1.8rem; font-weight: 800; color: var(--accent-neon);">
-        {{ user.full_name[0] }}
-      </div>
-      <div>
-        <div style="display: flex; align-items: center; gap: 0.75rem;">
-          <h1 style="font-size: 1.8rem; margin: 0;">{{ user.full_name }}</h1>
-          <span style="background: var(--accent-neon); color: #000; font-family: var(--font-tech); font-size: 0.68rem; font-weight: 800; padding: 0.2rem 0.5rem; border-radius: var(--radius-sm); text-transform: uppercase;">
-            VIP ARCHIVE MEMBER
-          </span>
+<div class="page">
+  <div class="container">
+    <div class="panel acct-head">
+      <div style="display:flex;align-items:center;gap:14px;min-width:0">
+        <div class="avatar">{{ user.full_name[0]|upper }}</div>
+        <div style="min-width:0">
+          <h1 class="title" style="margin:0;font-size:20px">{{ user.full_name }}</h1>
+          <div class="muted" style="font-size:13px;overflow-wrap:anywhere">{{ user.email }}</div>
         </div>
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">
-          {{ user.email }} • Member since Drop 01
-        </p>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        {% if user.role == 'admin' %}<a href="{{ url_for('admin_portal') }}" class="btn btn-sm">Admin</a>{% endif %}
+        <a href="{{ url_for('api_logout') }}" class="btn btn-sm btn-outline">Sign out</a>
       </div>
     </div>
 
-    <div style="display: flex; gap: 1rem;">
-      {% if user.role == 'admin' %}
-        <a href="{{ url_for('admin_portal') }}" class="btn-primary" style="font-size: 0.85rem; padding: 0.8rem 1.4rem;">
-          <i data-lucide="shield" style="width: 16px;"></i>
-          <span>Admin Portal</span>
-        </a>
-      {% endif %}
-      <a href="{{ url_for('api_logout') }}" class="btn-secondary" style="font-size: 0.85rem; padding: 0.8rem 1.4rem;">
-        Sign Out
-      </a>
-    </div>
-  </div>
+    <div class="section-head" style="margin-top:24px"><h2>Orders ({{ orders|length }})</h2></div>
 
-  <!-- Orders Grid -->
-  <div>
-    <div class="section-header-row">
-      <div>
-        <span class="section-label">FULFILLMENT & TRACKING</span>
-        <h2 class="section-title">Order History ({{ orders|length }})</h2>
-      </div>
-    </div>
-
-    {% if orders %}
-      <div style="display: flex; flex-direction: column; gap: 2rem;">
-        {% for order in orders %}
-          <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 2rem;">
-            <!-- Order Header -->
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 1.25rem; margin-bottom: 1.5rem;">
-              <div>
-                <div style="font-family: var(--font-tech); font-weight: 800; font-size: 1.1rem; color: #fff;">
-                  {{ order.id }}
-                </div>
-                <div style="font-size: 0.78rem; color: var(--text-muted);">
-                  Placed on {{ order.created_at[:10] }} • Total: ${{ "%.2f"|format(order.total_amount) }}
-                </div>
-              </div>
-
-              <div style="display: flex; align-items: center; gap: 1rem;">
-                <span class="status-badge status-{{ order.status }}">
-                  ● {{ order.status }}
-                </span>
-                <span style="font-family: var(--font-tech); font-size: 0.8rem; color: var(--text-muted);">
-                  Tracking: <code style="color: var(--accent-neon);">{{ order.tracking_number }}</code>
-                </span>
-              </div>
-            </div>
-
-            <!-- Order Items -->
-            <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem;">
-              {% for item in order['items'] %}
-                <div style="display: flex; align-items: center; gap: 1.25rem;">
-                  <img src="{{ item.product_image }}" alt="{{ item.product_name }}" style="width: 60px; height: 75px; object-fit: cover; border-radius: var(--radius-sm); background: #000;">
-                  <div style="flex-grow: 1;">
-                    <div style="font-family: var(--font-editorial); font-size: 0.95rem; font-weight: 700;">{{ item.product_name }}</div>
-                    <div style="font-family: var(--font-tech); font-size: 0.75rem; color: var(--text-muted);">Size: {{ item.size }} • Qty: {{ item.quantity }}</div>
-                  </div>
-                  <div style="font-family: var(--font-tech); font-size: 0.95rem; font-weight: 700;">
-                    ${{ "%.2f"|format(item.total_price) }}
-                  </div>
-                </div>
-              {% endfor %}
-            </div>
-
-            <!-- Delivery Address -->
-            <div style="background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); padding: 1rem; font-size: 0.82rem; color: var(--text-secondary); display: flex; justify-content: space-between;">
-              <div>
-                <strong>Shipping To:</strong> {{ order.customer_name }}, {{ order.shipping_address }}, {{ order.city }} ({{ order.postal_code }})
-              </div>
-              <div style="font-family: var(--font-tech); color: var(--accent-neon);">
-                Payment: {{ order.payment_method }} ({{ order.payment_status }})
-              </div>
-            </div>
+    {% for order in orders %}
+      <div class="panel">
+        <div class="order-top">
+          <div>
+            <strong>{{ order.id }}</strong>
+            <div class="muted" style="font-size:13px">{{ (order.created_at or '')[:10] }} · ${{ "%.2f"|format(order.total_amount) }}</div>
+          </div>
+          <span class="status status-{{ order.status }}">{{ order.status }}</span>
+        </div>
+        {% for item in order['items'] %}
+          <div class="sum-item">
+            <img src="{{ item.product_image }}" alt="">
+            <div>{{ item.product_name }}<small>Size {{ item.size }} · Qty {{ item.quantity }}</small></div>
+            <b>${{ "%.2f"|format(item.total_price) }}</b>
           </div>
         {% endfor %}
+        <div class="note" style="margin-top:10px">
+          Ships to {{ order.customer_name }}, {{ order.shipping_address }}, {{ order.city }} {{ order.postal_code }}<br>
+          Tracking: <code>{{ order.tracking_number }}</code> · Payment: {{ order.payment_method }}
+        </div>
       </div>
     {% else %}
-      <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 4rem 2rem; text-align: center;">
-        <i data-lucide="package-search" style="width: 50px; height: 50px; color: var(--text-muted); margin: 0 auto 1.5rem;"></i>
-        <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem;">No Orders Yet</h3>
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 2rem;">When you purchase items from Drop 04, tracking info appears here.</p>
-        <a href="{{ url_for('index') }}" class="btn-primary">Browse New Drops</a>
+      <div class="panel empty-state">
+        <h3>No orders yet</h3>
+        <p>Your orders and tracking will appear here.</p>
+        <a href="{{ url_for('index') }}" class="btn">Start shopping</a>
       </div>
-    {% endif %}
+    {% endfor %}
   </div>
 </div>
 {% endblock %}

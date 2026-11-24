@@ -1,529 +1,410 @@
 /**
- * AURA STUDIOS | High Fashion Unisex Streetwear
- * Main Interactive Application Script
+ * AURA STUDIOS - storefront script (plain JavaScript, no external libraries)
  */
 
-// Global State
+/* ---------- Helpers ---------- */
+const FREE_SHIPPING_AT = 150;
+const SHIPPING_FEE = 15;
+
+function esc(v) {
+  return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function money(n) { return '$' + (Number(n) || 0).toFixed(2); }
+function icon(id) { return `<svg class="i"><use href="#i-${id}"/></svg>`; }
+function load(key, fallback) {
+  try { const v = JSON.parse(localStorage.getItem(key)); return v == null ? fallback : v; } catch (e) { return fallback; }
+}
+function save(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { /* private mode / storage full */ }
+}
+
 const AURA = {
-  cart: JSON.parse(localStorage.getItem('aura_cart')) || [],
-  wishlist: JSON.parse(localStorage.getItem('aura_wishlist')) || [],
-  freeShippingThreshold: 150.00,
-  activeCoupon: null
+  cart: load('aura_cart_v2', []),
+  wishlist: load('aura_wishlist_v2', []),
+  coupon: load('aura_coupon_v2', null)
 };
+window.AURA_CATALOG = window.AURA_CATALOG || {};
 
-// DOM Content Loaded
-document.addEventListener('DOMContentLoaded', () => {
-  initCart();
-  initWishlist();
-  initEventListeners();
-  initFitAdvisor();
-  initSearchAndFilter();
-  updateHeaderBadges();
-});
+function imageOf(p) { return Array.isArray(p.images) ? p.images[0] : p.image; }
 
-/* ==========================================================================
-   CART ENGINE
-   ========================================================================== */
-function initCart() {
-  renderCartDrawer();
-}
-
-function saveCart() {
-  localStorage.setItem('aura_cart', JSON.stringify(AURA.cart));
-  updateHeaderBadges();
-  renderCartDrawer();
-}
-
-function addToCart(product, size = 'L', qty = 1) {
-  const existingIndex = AURA.cart.findIndex(item => item.id === product.id && item.size === size);
-  if (existingIndex > -1) {
-    AURA.cart[existingIndex].qty += qty;
-  } else {
-    AURA.cart.push({
-      id: product.id,
-      name: product.name,
-      price: parseFloat(product.price),
-      image: Array.isArray(product.images) ? product.images[0] : product.image,
-      size: size,
-      qty: qty,
-      category: product.category || 'Streetwear',
-      fit_type: product.fit_type || 'Unisex Boxy'
-    });
-  }
-  saveCart();
-  showToast(`Added to Bag: ${product.name} (${size})`, 'success');
-  openCartDrawer();
-}
-
-function updateCartQty(index, delta) {
-  if (!AURA.cart[index]) return;
-  AURA.cart[index].qty += delta;
-  if (AURA.cart[index].qty <= 0) {
-    AURA.cart.splice(index, 1);
-  }
-  saveCart();
-}
-
-function removeFromCart(index) {
-  if (AURA.cart[index]) {
-    const item = AURA.cart[index];
-    AURA.cart.splice(index, 1);
-    saveCart();
-    showToast(`Removed ${item.name} from Bag`, 'info');
-  }
-}
-
-function openCartDrawer() {
-  document.getElementById('cartDrawerOverlay')?.classList.add('active');
-  document.getElementById('cartDrawer')?.classList.add('active');
+/* ---------- Layers (drawers / sheets) ---------- */
+let lastFocus = null;
+function openLayer(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  closeLayers(true);
+  lastFocus = document.activeElement;
+  el.classList.add('active');
+  el.setAttribute('aria-hidden', 'false');
+  document.getElementById('overlay').classList.add('active');
   document.body.style.overflow = 'hidden';
+  const first = el.querySelector('[data-close], input, button');
+  if (first) setTimeout(() => first.focus({ preventScroll: true }), 50);
 }
-
-function closeCartDrawer() {
-  document.getElementById('cartDrawerOverlay')?.classList.remove('active');
-  document.getElementById('cartDrawer')?.classList.remove('active');
+function closeLayers(silent) {
+  document.querySelectorAll('.drawer.active, .sheet.active').forEach(el => {
+    el.classList.remove('active');
+    el.setAttribute('aria-hidden', 'true');
+  });
+  document.getElementById('overlay')?.classList.remove('active');
   document.body.style.overflow = '';
+  if (!silent && lastFocus && lastFocus.focus) { try { lastFocus.focus({ preventScroll: true }); } catch (e) {} }
+}
+const openCartDrawer = () => openLayer('cartDrawer');
+const closeCartDrawer = () => closeLayers();
+const openWishlistDrawer = () => openLayer('wishlistDrawer');
+const closeWishlistDrawer = () => closeLayers();
+const openFitAdvisor = () => openLayer('fitAdvisorModal');
+const closeFitAdvisor = () => closeLayers();
+const openAuthModal = () => openLayer('authModal');
+const closeAuthModal = () => closeLayers();
+const closeQuickView = () => closeLayers();
+
+/* ---------- Toasts ---------- */
+function showToast(message, type) {
+  const box = document.getElementById('toastContainer');
+  if (!box) return;
+  const t = document.createElement('div');
+  t.className = 'toast' + (type === 'error' ? ' error' : '');
+  t.textContent = message;
+  box.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 2800);
 }
 
-function renderCartDrawer() {
-  const container = document.getElementById('cartItemsList');
-  const emptyState = document.getElementById('cartEmptyState');
-  const footer = document.getElementById('cartDrawerFooter');
-  const shippingTrack = document.getElementById('shippingProgressFill');
-  const shippingText = document.getElementById('shippingStatusMsg');
-
-  if (!container) return;
-
-  if (AURA.cart.length === 0) {
-    container.innerHTML = '';
-    if (emptyState) emptyState.style.display = 'block';
-    if (footer) footer.style.display = 'none';
-    if (shippingTrack) shippingTrack.style.width = '0%';
-    if (shippingText) shippingText.textContent = `Add $${AURA.freeShippingThreshold.toFixed(2)} for FREE Worldwide Express Shipping`;
-    return;
+/* ---------- Totals ---------- */
+function cartSubtotal() { return AURA.cart.reduce((s, i) => s + i.price * i.qty, 0); }
+function getTotals() {
+  const subtotal = cartSubtotal();
+  if (AURA.coupon && subtotal < (AURA.coupon.min_spend || 0)) {
+    AURA.coupon = null; save('aura_coupon_v2', null);
   }
+  const discount = AURA.coupon ? Math.round(subtotal * AURA.coupon.discount_percent) / 100 : 0;
+  const shipping = subtotal === 0 || subtotal >= FREE_SHIPPING_AT ? 0 : SHIPPING_FEE;
+  return { subtotal, discount, shipping, total: Math.max(0, subtotal - discount + shipping) };
+}
 
-  if (emptyState) emptyState.style.display = 'none';
-  if (footer) footer.style.display = 'block';
+/* ---------- Cart ---------- */
+function persistCart() {
+  save('aura_cart_v2', AURA.cart);
+  updateBadges();
+  renderCart();
+  document.dispatchEvent(new CustomEvent('aura:cart'));
+}
+function addToCart(product, size, qty) {
+  qty = qty || 1;
+  const found = AURA.cart.find(i => i.id === product.id && i.size === size);
+  if (found) found.qty = Math.min(10, found.qty + qty);
+  else AURA.cart.push({
+    id: product.id, name: product.name, price: parseFloat(product.price),
+    image: imageOf(product), size, qty, category: product.category || ''
+  });
+  persistCart();
+  showToast(`Added to bag: ${product.name} (${size})`);
+}
+function updateCartQty(i, d) {
+  const item = AURA.cart[i]; if (!item) return;
+  item.qty = Math.min(10, item.qty + d);
+  if (item.qty <= 0) AURA.cart.splice(i, 1);
+  persistCart();
+}
+function removeFromCart(i) { AURA.cart.splice(i, 1); persistCart(); }
 
-  let subtotal = 0;
-  container.innerHTML = AURA.cart.map((item, idx) => {
-    const itemTotal = item.price * item.qty;
-    subtotal += itemTotal;
-    return `
-      <div class="cart-item">
-        <img src="${item.image}" alt="${item.name}" class="cart-item-img">
-        <div class="cart-item-info">
-          <div class="cart-item-title">${item.name}</div>
-          <div class="cart-item-meta">Size: ${item.size} • ${item.fit_type}</div>
-          <div class="cart-item-actions">
-            <div class="qty-stepper">
-              <button class="qty-btn" onclick="updateCartQty(${idx}, -1)">−</button>
-              <span class="qty-display">${item.qty}</span>
-              <button class="qty-btn" onclick="updateCartQty(${idx}, 1)">+</button>
-            </div>
-            <div class="cart-item-price">$${itemTotal.toFixed(2)}</div>
-            <button class="btn-remove-item" onclick="removeFromCart(${idx})" title="Remove item">✕</button>
+function renderCart() {
+  const list = document.getElementById('cartItems');
+  if (!list) return;
+  const empty = document.getElementById('cartEmpty');
+  const foot = document.getElementById('cartFoot');
+  const meter = document.getElementById('shipMeter');
+  const has = AURA.cart.length > 0;
+  list.style.display = has ? '' : 'none';
+  empty.style.display = has ? 'none' : '';
+  foot.style.display = has ? '' : 'none';
+  meter.style.display = has ? '' : 'none';
+  if (!has) { list.innerHTML = ''; return; }
+
+  list.innerHTML = AURA.cart.map((it, i) => `
+    <div class="line-item">
+      <img src="${esc(it.image)}" alt="${esc(it.name)}">
+      <div>
+        <div class="line-title">${esc(it.name)}</div>
+        <div class="line-meta">Size ${esc(it.size)}</div>
+        <div class="line-row">
+          <div class="stepper">
+            <button type="button" data-act="qty" data-i="${i}" data-d="-1" aria-label="Decrease quantity">−</button>
+            <span>${it.qty}</span>
+            <button type="button" data-act="qty" data-i="${i}" data-d="1" aria-label="Increase quantity">+</button>
           </div>
+          <button type="button" class="remove" data-act="remove" data-i="${i}" aria-label="Remove ${esc(it.name)}">${icon('close')}</button>
+          <span class="price">${money(it.price * it.qty)}</span>
         </div>
       </div>
-    `;
-  }).join('');
+    </div>`).join('');
 
-  // Free shipping bar calculation
-  const remaining = AURA.freeShippingThreshold - subtotal;
-  const progressPct = Math.min(100, (subtotal / AURA.freeShippingThreshold) * 100);
-  if (shippingTrack) shippingTrack.style.width = `${progressPct}%`;
-
-  if (remaining <= 0) {
-    if (shippingText) shippingText.innerHTML = `🎉 You unlocked <strong>FREE Worldwide Express Shipping</strong>!`;
-  } else {
-    if (shippingText) shippingText.innerHTML = `Add <strong>$${remaining.toFixed(2)}</strong> more for FREE Worldwide Express Shipping`;
+  const t = getTotals();
+  const left = FREE_SHIPPING_AT - t.subtotal;
+  document.getElementById('shipFill').style.width = Math.min(100, t.subtotal / FREE_SHIPPING_AT * 100) + '%';
+  document.getElementById('shipMsg').innerHTML = left <= 0
+    ? 'You have <strong>free shipping</strong>.'
+    : `Add <strong>${money(left)}</strong> more for free shipping.`;
+  document.getElementById('cartSubtotal').textContent = money(t.subtotal);
+  const row = document.getElementById('cartDiscountRow');
+  row.style.display = t.discount > 0 ? 'flex' : 'none';
+  if (t.discount > 0) {
+    document.getElementById('cartDiscountLabel').textContent = `Discount (${AURA.coupon.code})`;
+    document.getElementById('cartDiscount').textContent = '-' + money(t.discount);
   }
-
-  // Cost calculations
-  let discountAmount = 0;
-  if (AURA.activeCoupon) {
-    discountAmount = (subtotal * AURA.activeCoupon.discount_percent) / 100;
-  }
-  const shippingFee = (subtotal >= AURA.freeShippingThreshold || subtotal === 0) ? 0.00 : 15.00;
-  const total = Math.max(0, subtotal - discountAmount + shippingFee);
-
-  const subtotalEl = document.getElementById('cartSubtotalDisplay');
-  const discountRow = document.getElementById('cartDiscountRow');
-  const discountVal = document.getElementById('cartDiscountValue');
-  const shippingVal = document.getElementById('cartShippingDisplay');
-  const totalEl = document.getElementById('cartTotalDisplay');
-
-  if (subtotalEl) subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
-  if (discountRow) {
-    if (discountAmount > 0) {
-      discountRow.style.display = 'flex';
-      discountVal.textContent = `-$${discountAmount.toFixed(2)} (${AURA.activeCoupon.code})`;
-    } else {
-      discountRow.style.display = 'none';
-    }
-  }
-  if (shippingVal) shippingVal.textContent = shippingFee === 0 ? 'FREE' : `$${shippingFee.toFixed(2)}`;
-  if (totalEl) totalEl.textContent = `$${total.toFixed(2)}`;
+  document.getElementById('cartShipping').textContent = t.shipping === 0 ? 'Free' : money(t.shipping);
+  document.getElementById('cartTotal').textContent = money(t.total);
 }
 
-// Promo Code validation
-async function applyPromoCode() {
-  const input = document.getElementById('promoCodeInput');
-  if (!input) return;
-  const code = input.value.trim().toUpperCase();
-  if (!code) return;
-
-  const subtotal = AURA.cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-
+async function applyPromoCode(inputId) {
+  const input = document.getElementById(inputId || 'promoInput');
+  const code = (input?.value || '').trim().toUpperCase();
+  if (!code) { showToast('Enter a promo code', 'error'); return; }
   try {
     const res = await fetch('/api/coupons/apply', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code: code, cart_total: subtotal })
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, cart_total: cartSubtotal() })
     });
     const data = await res.json();
     if (data.valid) {
-      AURA.activeCoupon = data;
-      showToast(data.message, 'success');
-      renderCartDrawer();
+      AURA.coupon = { code: data.code, discount_percent: data.discount_percent, min_spend: data.min_spend || 0 };
+      save('aura_coupon_v2', AURA.coupon);
+      showToast(data.message);
+      renderCart();
+      document.dispatchEvent(new CustomEvent('aura:cart'));
     } else {
-      showToast(data.message || 'Invalid coupon code', 'error');
+      showToast(data.message || 'Invalid promo code', 'error');
     }
   } catch (e) {
-    // Client fallback if offline
-    if (code === 'AURA20') {
-      AURA.activeCoupon = { code: 'AURA20', discount_percent: 20 };
-      showToast('Applied 20% discount!', 'success');
-      renderCartDrawer();
-    } else {
-      showToast('Invalid promo code', 'error');
-    }
+    showToast('Could not check the code. Please try again.', 'error');
   }
 }
 
-/* ==========================================================================
-   WISHLIST ENGINE
-   ========================================================================== */
-function initWishlist() {
-  renderWishlistDrawer();
-}
-
+/* ---------- Wishlist ---------- */
 function toggleWishlist(product) {
-  const index = AURA.wishlist.findIndex(item => item.id === product.id);
-  if (index > -1) {
-    AURA.wishlist.splice(index, 1);
-    showToast(`Removed ${product.name} from Wishlist`, 'info');
-  } else {
-    AURA.wishlist.push({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: Array.isArray(product.images) ? product.images[0] : product.image,
-      category: product.category,
-      fit_type: product.fit_type
-    });
-    showToast(`Saved ${product.name} to Wishlist`, 'success');
+  const i = AURA.wishlist.findIndex(w => w.id === product.id);
+  if (i > -1) { AURA.wishlist.splice(i, 1); showToast('Removed from saved items'); }
+  else {
+    AURA.wishlist.push({ id: product.id, name: product.name, price: product.price, image: imageOf(product), category: product.category, slug: product.slug });
+    showToast('Saved');
   }
-  localStorage.setItem('aura_wishlist', JSON.stringify(AURA.wishlist));
-  updateHeaderBadges();
-  renderWishlistDrawer();
-
-  // Update heart icons across page
-  document.querySelectorAll(`.wishlist-btn-${product.id}`).forEach(btn => {
-    btn.classList.toggle('active', index === -1);
+  save('aura_wishlist_v2', AURA.wishlist);
+  updateBadges(); renderWishlist(); syncHearts();
+}
+function syncHearts() {
+  document.querySelectorAll('[data-wish]').forEach(b => {
+    const on = AURA.wishlist.some(w => w.id === b.dataset.wish);
+    b.classList.toggle('active', on);
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
 }
-
-function openWishlistDrawer() {
-  document.getElementById('wishlistDrawerOverlay')?.classList.add('active');
-  document.getElementById('wishlistDrawer')?.classList.add('active');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeWishlistDrawer() {
-  document.getElementById('wishlistDrawerOverlay')?.classList.remove('active');
-  document.getElementById('wishlistDrawer')?.classList.remove('active');
-  document.body.style.overflow = '';
-}
-
-function renderWishlistDrawer() {
-  const container = document.getElementById('wishlistItemsList');
-  const emptyState = document.getElementById('wishlistEmptyState');
-  if (!container) return;
-
-  if (AURA.wishlist.length === 0) {
-    container.innerHTML = '';
-    if (emptyState) emptyState.style.display = 'block';
-    return;
-  }
-
-  if (emptyState) emptyState.style.display = 'none';
-  container.innerHTML = AURA.wishlist.map((item, idx) => `
-    <div class="cart-item">
-      <img src="${item.image}" alt="${item.name}" class="cart-item-img">
-      <div class="cart-item-info">
-        <div class="cart-item-title">${item.name}</div>
-        <div class="cart-item-meta">${item.category} • $${parseFloat(item.price).toFixed(2)}</div>
-        <div class="cart-item-actions">
-          <button class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.75rem;" onclick='addToCart(${JSON.stringify(item)}, "L", 1)'>
-            Move to Bag
-          </button>
-          <button class="btn-remove-item" onclick='toggleWishlist(${JSON.stringify(item)})'>✕</button>
+function renderWishlist() {
+  const list = document.getElementById('wishlistItems');
+  if (!list) return;
+  const empty = document.getElementById('wishlistEmpty');
+  const has = AURA.wishlist.length > 0;
+  list.style.display = has ? '' : 'none';
+  empty.style.display = has ? 'none' : '';
+  list.innerHTML = AURA.wishlist.map((w, i) => `
+    <div class="line-item">
+      <img src="${esc(w.image)}" alt="${esc(w.name)}">
+      <div>
+        <div class="line-title">${esc(w.name)}</div>
+        <div class="line-meta">${esc(w.category)} · ${money(w.price)}</div>
+        <div class="line-row">
+          <a class="btn btn-sm btn-outline" href="/product/${encodeURIComponent(w.slug || w.id)}">Choose size</a>
+          <button type="button" class="remove" data-act="unwish" data-i="${i}" aria-label="Remove ${esc(w.name)}">${icon('close')}</button>
         </div>
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
+}
+function updateBadges() {
+  const q = AURA.cart.reduce((s, i) => s + i.qty, 0);
+  const c = document.getElementById('headerCartCount');
+  if (c) { c.textContent = q; c.style.display = q ? 'flex' : 'none'; }
+  const w = document.getElementById('headerWishlistCount');
+  if (w) { w.textContent = AURA.wishlist.length; w.style.display = AURA.wishlist.length ? 'flex' : 'none'; }
 }
 
-function updateHeaderBadges() {
-  const totalCartQty = AURA.cart.reduce((sum, item) => sum + item.qty, 0);
-  const cartBadge = document.getElementById('headerCartCount');
-  if (cartBadge) {
-    cartBadge.textContent = totalCartQty;
-    cartBadge.style.display = totalCartQty > 0 ? 'flex' : 'none';
-  }
-
-  const wishlistBadge = document.getElementById('headerWishlistCount');
-  if (wishlistBadge) {
-    wishlistBadge.textContent = AURA.wishlist.length;
-    wishlistBadge.style.display = AURA.wishlist.length > 0 ? 'flex' : 'none';
-  }
+/* ---------- Quick view ---------- */
+let qvState = { product: null, size: null };
+function sizeInStock(p, s) {
+  const inv = p.inventory || {};
+  return inv[s] === undefined || Number(inv[s]) > 0;
 }
-
-/* ==========================================================================
-   QUICK VIEW MODAL
-   ========================================================================== */
-function openQuickView(productData) {
-  const modal = document.getElementById('quickViewModal');
-  const backdrop = document.getElementById('modalBackdrop');
-  if (!modal || !backdrop) return;
-
-  const images = Array.isArray(productData.images) ? productData.images : [productData.images];
-  const primaryImg = images[0];
-
-  document.getElementById('qvImg').src = primaryImg;
-  document.getElementById('qvCategory').textContent = `${productData.category} • ${productData.gender || 'UNISEX'}`;
-  document.getElementById('qvTitle').textContent = productData.name;
-  document.getElementById('qvPrice').textContent = `$${parseFloat(productData.price).toFixed(2)}`;
-  document.getElementById('qvFabric').textContent = productData.fabric_weight || '380 GSM Heavy French Terry';
-  document.getElementById('qvFit').textContent = productData.fit_type || 'Oversized Boxy Fit';
-  document.getElementById('qvDesc').textContent = productData.description || '';
-
-  // Render sizes
-  const sizesContainer = document.getElementById('qvSizes');
-  const sizes = productData.sizes || ['S', 'M', 'L', 'XL', 'XXL'];
-  let selectedSize = sizes[1] || 'M';
-
-  sizesContainer.innerHTML = sizes.map(s => `
-    <button type="button" class="size-pill-quick ${s === selectedSize ? 'active' : ''}" onclick="selectQuickViewSize(this, '${s}')">
-      ${s}
-    </button>
-  `).join('');
-
-  // Quick Add Button handler
-  const addBtn = document.getElementById('qvAddBtn');
-  addBtn.onclick = () => {
-    addToCart(productData, selectedSize, 1);
-    closeQuickView();
+function openQuickView(p) {
+  if (!p) return;
+  const sizes = p.sizes || [];
+  qvState = { product: p, size: sizes.find(s => sizeInStock(p, s)) || null };
+  document.getElementById('qvImg').src = imageOf(p);
+  document.getElementById('qvImg').alt = p.name;
+  document.getElementById('qvCategory').textContent = `${p.category} · ${p.gender || 'Unisex'}`;
+  document.getElementById('qvTitle').textContent = p.name;
+  document.getElementById('qvPrice').textContent = money(p.price);
+  document.getElementById('qvDesc').textContent = p.description || '';
+  document.getElementById('qvLink').href = '/product/' + encodeURIComponent(p.slug || p.id);
+  const box = document.getElementById('qvSizes');
+  box.innerHTML = sizes.map(s => `<button type="button" class="size ${s === qvState.size ? 'active' : ''}" data-act="qv-size" data-size="${esc(s)}" ${sizeInStock(p, s) ? '' : 'disabled'}>${esc(s)}</button>`).join('');
+  const add = document.getElementById('qvAddBtn');
+  add.disabled = !qvState.size;
+  add.textContent = qvState.size ? 'Add to bag' : 'Sold out';
+  add.onclick = () => {
+    if (!qvState.size) return;
+    addToCart(qvState.product, qvState.size, 1);
+    closeLayers(); openCartDrawer();
   };
-
-  backdrop.classList.add('active');
-  modal.classList.add('active');
-  document.body.style.overflow = 'hidden';
+  openLayer('quickViewModal');
 }
 
-function selectQuickViewSize(button, size) {
-  button.parentElement.querySelectorAll('.size-pill-quick').forEach(b => b.classList.remove('active'));
-  button.classList.add('active');
-  const addBtn = document.getElementById('qvAddBtn');
-  if (addBtn) addBtn.dataset.size = size;
-}
-
-function closeQuickView() {
-  document.getElementById('quickViewModal')?.classList.remove('active');
-  document.getElementById('modalBackdrop')?.classList.remove('active');
-  document.body.style.overflow = '';
-}
-
-/* ==========================================================================
-   FIT ADVISOR (Unisex Size Calculator)
-   ========================================================================== */
+/* ---------- Size guide ---------- */
 function initFitAdvisor() {
-  const heightSlider = document.getElementById('heightSlider');
-  const weightSlider = document.getElementById('weightSlider');
-  const fitPrefRadios = document.querySelectorAll('input[name="fitPref"]');
-
-  if (!heightSlider || !weightSlider) return;
-
-  function calculateSize() {
-    const height = parseInt(heightSlider.value, 10); // cm
-    const weight = parseInt(weightSlider.value, 10); // kg
-    let pref = 'boxy';
-    fitPrefRadios.forEach(r => { if (r.checked) pref = r.value; });
-
-    document.getElementById('heightValue').textContent = `${height} cm (${Math.floor(height/30.48)}'${Math.round((height%30.48)/2.54)}")`;
-    document.getElementById('weightValue').textContent = `${weight} kg (${Math.round(weight * 2.204)} lbs)`;
-
-    let size = 'M';
-    if (weight < 58 && height < 168) {
-      size = pref === 'snug' ? 'XS' : 'S';
-    } else if (weight < 72 && height < 178) {
-      size = pref === 'snug' ? 'S' : (pref === 'boxy' ? 'L' : 'M');
-    } else if (weight < 86 && height < 186) {
-      size = pref === 'snug' ? 'M' : (pref === 'boxy' ? 'XL' : 'L');
-    } else {
-      size = pref === 'snug' ? 'L' : 'XXL';
-    }
-
-    const badge = document.getElementById('recSizeDisplay');
-    const note = document.getElementById('recSizeNote');
-    if (badge) badge.textContent = size;
-    if (note) {
-      note.textContent = pref === 'boxy' 
-        ? `We selected Size ${size} for an authentic streetwear drop-shoulder drape.` 
-        : `We selected Size ${size} for a balanced, tailored silhouette.`;
-    }
+  const h = document.getElementById('heightSlider'), w = document.getElementById('weightSlider');
+  if (!h || !w) return;
+  const sizes = ['S', 'M', 'L', 'XL', 'XXL'];
+  const radios = document.querySelectorAll('input[name="fitPref"]');
+  function calc() {
+    const height = +h.value, weight = +w.value;
+    const pref = [...radios].find(r => r.checked)?.value || 'boxy';
+    const ft = Math.floor(height / 30.48), inch = Math.round((height % 30.48) / 2.54);
+    document.getElementById('heightValue').textContent = `${height} cm (${ft}'${inch === 12 ? 11 : inch}")`;
+    document.getElementById('weightValue').textContent = `${weight} kg (${Math.round(weight * 2.2046)} lb)`;
+    let idx = 3;
+    if (weight < 58 && height < 168) idx = 0;
+    else if (weight < 72 && height < 178) idx = 1;
+    else if (weight < 86 && height < 186) idx = 2;
+    if (pref === 'boxy') idx = Math.min(sizes.length - 1, idx + 1);
+    document.getElementById('recSizeDisplay').textContent = sizes[idx];
+    document.getElementById('recSizeNote').textContent = pref === 'boxy'
+      ? 'A size up for a loose, oversized drape.' : 'True to size for a cleaner, regular fit.';
   }
-
-  heightSlider.addEventListener('input', calculateSize);
-  weightSlider.addEventListener('input', calculateSize);
-  fitPrefRadios.forEach(r => r.addEventListener('change', calculateSize));
-  calculateSize();
+  h.addEventListener('input', calc); w.addEventListener('input', calc);
+  radios.forEach(r => r.addEventListener('change', calc));
+  calc();
 }
 
-function openFitAdvisor() {
-  document.getElementById('fitAdvisorModal')?.classList.add('active');
-  document.getElementById('modalBackdrop')?.classList.add('active');
-  document.body.style.overflow = 'hidden';
-}
+/* ---------- Shop filters (home page) ---------- */
+function initShop() {
+  const section = document.getElementById('storeSection');
+  if (!section) return;
+  const grid = document.getElementById('productsGridContainer');
+  const cards = [...grid.querySelectorAll('.card')];
+  cards.forEach((c, i) => c.dataset.index = i);
+  const search = document.getElementById('storeSearchInput');
+  const sort = document.getElementById('storeSortSelect');
+  let category = section.dataset.active || 'all';
+  let firstRun = true;
 
-function closeFitAdvisor() {
-  document.getElementById('fitAdvisorModal')?.classList.remove('active');
-  document.getElementById('modalBackdrop')?.classList.remove('active');
-  document.body.style.overflow = '';
-}
-
-/* ==========================================================================
-   INTERACTIVE SEARCH & FILTERS
-   ========================================================================== */
-function initSearchAndFilter() {
-  const searchInput = document.getElementById('storeSearchInput');
-  const sortSelect = document.getElementById('storeSortSelect');
-
-  if (searchInput) {
-    let debounce;
-    searchInput.addEventListener('input', () => {
-      clearTimeout(debounce);
-      debounce = setTimeout(() => filterProducts(), 250);
+  function apply() {
+    const q = (search.value || '').trim().toLowerCase();
+    let shown = 0;
+    cards.forEach(c => {
+      const okCat = category === 'all' || c.dataset.category === category;
+      const okQ = !q || (c.dataset.name + ' ' + c.dataset.category + ' ' + c.dataset.fit).toLowerCase().includes(q);
+      c.style.display = okCat && okQ ? '' : 'none';
+      if (okCat && okQ) shown++;
     });
+    const by = {
+      price_asc: (a, b) => a.dataset.price - b.dataset.price,
+      price_desc: (a, b) => b.dataset.price - a.dataset.price,
+      rating: (a, b) => b.dataset.rating - a.dataset.rating,
+      featured: (a, b) => a.dataset.index - b.dataset.index
+    }[sort.value] || ((a, b) => a.dataset.index - b.dataset.index);
+    [...cards].sort(by).forEach(c => grid.appendChild(c));
+    document.getElementById('emptyMsg').style.display = shown ? 'none' : '';
+    document.getElementById('productsCountDisplay').textContent = `${shown} ${shown === 1 ? 'item' : 'items'}`;
+    document.querySelectorAll('.chip').forEach(b => b.classList.toggle('active', b.dataset.category === category));
+    if (!firstRun && window.AuraFX) window.AuraFX.refreshGrid(grid);  // animate cards after a filter/sort change
+    firstRun = false;
   }
-
-  if (sortSelect) {
-    sortSelect.addEventListener('change', () => filterProducts());
-  }
+  document.querySelectorAll('.chip').forEach(b => b.addEventListener('click', () => {
+    category = b.dataset.category;
+    try { history.replaceState(null, '', category === 'all' ? location.pathname : `?category=${encodeURIComponent(category)}`); } catch (e) {}
+    apply();
+  }));
+  let t; search.addEventListener('input', () => { clearTimeout(t); t = setTimeout(apply, 150); });
+  sort.addEventListener('change', apply);
+  apply();
 }
 
-function filterProducts() {
-  const searchVal = (document.getElementById('storeSearchInput')?.value || '').toLowerCase();
-  const sortVal = document.getElementById('storeSortSelect')?.value || 'featured';
-  const activeCategory = document.querySelector('.filter-pill.active')?.dataset.category || 'all';
+/* ---------- Account ---------- */
+let authMode = 'login';
+function switchAuthTab(mode) {
+  authMode = mode;
+  document.getElementById('tabLogin').classList.toggle('active', mode === 'login');
+  document.getElementById('tabRegister').classList.toggle('active', mode === 'register');
+  document.getElementById('nameField').style.display = mode === 'register' ? '' : 'none';
+  document.getElementById('authSubmit').textContent = mode === 'register' ? 'Create account' : 'Sign in';
+  document.getElementById('authPassword').autocomplete = mode === 'register' ? 'new-password' : 'current-password';
+  document.getElementById('authMsg').textContent = '';
+}
+async function handleAuthSubmit(e) {
+  e.preventDefault();
+  const msg = document.getElementById('authMsg');
+  const btn = document.getElementById('authSubmit');
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+  const full_name = document.getElementById('authName').value.trim();
+  if (!email || !password || (authMode === 'register' && !full_name)) { msg.textContent = 'Please fill in all fields.'; return; }
+  btn.disabled = true; msg.textContent = '';
+  try {
+    const res = await fetch(authMode === 'register' ? '/api/auth/register' : '/api/auth/login', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, full_name })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast('Welcome, ' + data.user.full_name);
+      setTimeout(() => { location.href = data.user.role === 'admin' ? '/admin' : location.pathname; }, 500);
+    } else { msg.textContent = data.error || 'Something went wrong.'; btn.disabled = false; }
+  } catch (err) { msg.textContent = 'Network error. Please try again.'; btn.disabled = false; }
+}
 
-  const cards = Array.from(document.querySelectorAll('.product-card'));
-  let visibleCount = 0;
+/* ---------- Global events ---------- */
+function bindEvents() {
+  document.addEventListener('click', e => {
+    const el = e.target.closest('[data-act], [data-close], [data-wish], [data-quick]');
+    if (el && el.hasAttribute('data-close')) { closeLayers(); return; }
+    if (!el) return;
 
-  cards.forEach(card => {
-    const name = (card.dataset.name || '').toLowerCase();
-    const category = (card.dataset.category || '').toLowerCase();
-    const badge = (card.dataset.badge || '').toLowerCase();
+    if (el.dataset.wish) {
+      const p = AURA_CATALOG[el.dataset.wish]; if (p) toggleWishlist(p); return;
+    }
+    if (el.dataset.quick) { openQuickView(AURA_CATALOG[el.dataset.quick]); return; }
 
-    const matchesCategory = activeCategory === 'all' || category === activeCategory.toLowerCase();
-    const matchesSearch = !searchVal || name.includes(searchVal) || category.includes(searchVal) || badge.includes(searchVal);
-
-    if (matchesCategory && matchesSearch) {
-      card.style.display = 'flex';
-      visibleCount++;
-    } else {
-      card.style.display = 'none';
+    const i = +el.dataset.i;
+    switch (el.dataset.act) {
+      case 'qty': updateCartQty(i, +el.dataset.d); break;
+      case 'remove': removeFromCart(i); break;
+      case 'unwish': AURA.wishlist.splice(i, 1); save('aura_wishlist_v2', AURA.wishlist); updateBadges(); renderWishlist(); syncHearts(); break;
+      case 'qv-size':
+        qvState.size = el.dataset.size;
+        document.querySelectorAll('#qvSizes .size').forEach(b => b.classList.toggle('active', b === el));
+        break;
     }
   });
+  document.getElementById('overlay')?.addEventListener('click', () => closeLayers());
+  window.addEventListener('keydown', e => { if (e.key === 'Escape') { closeLayers(); setMenu(false); } });
 
-  const countDisplay = document.getElementById('productsCountDisplay');
-  if (countDisplay) {
-    countDisplay.textContent = `Showing ${visibleCount} unisex items`;
+  const toggle = document.getElementById('menuToggle');
+  toggle?.addEventListener('click', () => setMenu(!document.getElementById('mainNav').classList.contains('open')));
+  document.getElementById('mainNav')?.addEventListener('click', e => { if (e.target.closest('a, button')) setMenu(false); });
+  document.addEventListener('click', e => { if (!e.target.closest('.site-header')) setMenu(false); });
+  window.addEventListener('resize', () => { if (innerWidth >= 900) setMenu(false); });
+}
+function setMenu(open) {
+  const nav = document.getElementById('mainNav'), btn = document.getElementById('menuToggle');
+  if (!nav || !btn) return;
+  nav.classList.toggle('open', open);
+  btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  bindEvents();
+  renderCart(); renderWishlist(); updateBadges(); syncHearts();
+  initFitAdvisor(); initShop();
+  if (new URLSearchParams(location.search).get('auth') === 'login' && !window.AURA_USER) {
+    openAuthModal();
+    try { history.replaceState(null, '', location.pathname); } catch (e) {}
   }
-}
-
-function selectCategoryFilter(btn, category) {
-  document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  filterProducts();
-}
-
-/* ==========================================================================
-   TOAST NOTIFICATIONS
-   ========================================================================== */
-function showToast(message, type = 'info') {
-  let container = document.getElementById('toastContainer');
-  if (!container) {
-    container = document.createElement('div');
-    container.id = 'toastContainer';
-    container.className = 'toast-container';
-    document.body.appendChild(container);
-  }
-
-  const toast = document.createElement('div');
-  toast.className = `toast toast-${type}`;
-  toast.innerHTML = `
-    <span class="toast-icon">${type === 'success' ? '✦' : 'ℹ'}</span>
-    <span class="toast-text">${message}</span>
-  `;
-
-  container.appendChild(toast);
-  setTimeout(() => {
-    toast.style.opacity = '0';
-    toast.style.transform = 'translateY(10px)';
-    setTimeout(() => toast.remove(), 300);
-  }, 3200);
-}
-
-/* ==========================================================================
-   EVENT LISTENERS & MODAL CLOSE TRIGGERS
-   ========================================================================== */
-function initEventListeners() {
-  // Close buttons
-  document.getElementById('cartCloseBtn')?.addEventListener('click', closeCartDrawer);
-  document.getElementById('cartDrawerOverlay')?.addEventListener('click', closeCartDrawer);
-  document.getElementById('wishlistCloseBtn')?.addEventListener('click', closeWishlistDrawer);
-  document.getElementById('wishlistDrawerOverlay')?.addEventListener('click', closeWishlistDrawer);
-  document.getElementById('modalBackdrop')?.addEventListener('click', () => {
-    closeQuickView();
-    closeFitAdvisor();
-    closeAuthModal();
-  });
-
-  // ESC key
-  window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      closeCartDrawer();
-      closeWishlistDrawer();
-      closeQuickView();
-      closeFitAdvisor();
-      closeAuthModal();
-    }
-  });
-}
-
-// Auth Modal
-function openAuthModal() {
-  document.getElementById('authModal')?.classList.add('active');
-  document.getElementById('modalBackdrop')?.classList.add('active');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeAuthModal() {
-  document.getElementById('authModal')?.classList.remove('active');
-  document.getElementById('modalBackdrop')?.classList.remove('active');
-  document.body.style.overflow = '';
-}
+});

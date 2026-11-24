@@ -1,89 +1,49 @@
-# AURA STUDIOS | High Fashion Unisex Streetwear & Luxury Pret
+# AURA STUDIOS
 
-> **Architectural Non-Binary Silhouettes • Heavyweight 460 GSM French Terry • Interactive Streetwear E-Commerce**
+Simple, sober unisex clothing store (Flask + SQLite, optional Supabase). Mobile-first and tested at Android phone width (393 px) as well as tablet and desktop.
 
-Inspired by the editorial elegance of **Zara Studio** and the raw urban streetwear energy of **Bonkers Corner**, **AURA STUDIOS** is a modern, fully animated, interactive e-commerce platform built specifically for genderless/unisex apparel.
+## What's in the store
+- Shop: hoodies, sweatshirts, T-shirts, shirts, pants. Category chips, search and sorting work instantly.
+- Product-only imagery: every product uses a clean generated garment illustration (front + back). No people, no external image hosts, nothing to break offline.
+- Bag drawer with free-shipping meter and promo codes, saved items, quick-add size picker, size guide.
+- Checkout (demo payment only), customer accounts with order history, admin dashboard (products + orders).
 
----
-
-## ✦ Key Highlights & Interactive Features
-
-### 1. Animated Editorial & Streetwear UX
-- **Brutalist Announcement Marquee**: Continuous dual-speed ribbon ticker showcasing drop announcements and flash discounts.
-- **Hero Drop Showcase**: High-impact editorial photography, live drop status badge (`DROP 04 LIVE`), and smooth scroll call-to-actions.
-- **Dual-Image Hover Flip**: Product cards seamlessly reveal secondary editorial back/detail views on hover.
-- **Hover Quick-Size Drawer**: Select unisex sizes (S, M, L, XL, XXL) directly from product cards on hover with 1-click cart addition.
-- **Interactive "Find Your Fit" Unisex Advisor**: Algorithmic sizing calculator that factors in height, weight, and aesthetic preference (Tailored Clean vs. Boxy Oversized).
-- **Slide-out Cart Drawer with Free Shipping Meter**: Real-time progress bar ($150 target), quantity adjusters, instant promo code validation (`AURA20` for 20% off), and cost breakdown.
-- **Wishlist Engine**: Particle heart animation with instant persistence across sessions.
-- **Interactive Lookbook**: Zara Studio-inspired full bleed campaign with interactive shop-the-look action links.
-
-### 2. User & Customer Experience
-- **Authentication**: Seamless modal sign-in/register with pre-loaded demo credentials.
-- **My Account Portal**: Live order history with status tracking indicators (`Processing`, `Shipped`, `Delivered`), item details, tracking IDs, and delivery addresses.
-- **Frictionless Checkout**: Multi-step checkout with address validation, simulated payment modes (Credit Card, Apple Pay / G-Pay, Cash on Delivery), and instant order confirmation with tracking IDs.
-
-### 3. Executive Admin Control Panel (`/admin`)
-- **Key Metrics Dashboard**: Live calculations for Gross Revenue, Total Orders, Average Order Value (AOV), Active Products, and Processing Orders.
-- **Full Catalog CRUD**:
-  - Add new unisex pieces with live image preview, GSM fabric weight, fit types, sizes, and pricing.
-  - Delete or modify catalog pieces.
-- **Order Fulfillment Manager**:
-  - View incoming orders and purchased items.
-  - Update fulfillment statuses inline (`Pending` → `Processing` → `Shipped` → `Delivered`).
-- **Supabase Cloud Sync Monitor**: View status of database connectivity and cloud PostgreSQL replication.
-
----
-
-## 🛠️ Technology Stack
-
-- **Frontend**: HTML5, Modern CSS3 (Grid, Flexbox, Custom Variables, Keyframe Animations, Glassmorphism), Vanilla ES6+ JavaScript, Lucide Icons.
-- **Backend**: Python 3 (Flask, Flask-CORS, Werkzeug).
-- **Database & Cloud**: Supabase (PostgreSQL with Row Level Security) + Resilient Zero-Config SQLite local engine fallback with full schema parity.
-
----
-
-## 🚀 Quick Start Guide
-
-### 1. Prerequisites
-Ensure you have Python 3.8+ installed.
-
-### 2. Install Dependencies
+## Run it
 ```bash
 pip install -r requirements.txt
-```
-
-### 3. Run Application
-```bash
 python app.py
 ```
-Open your browser and navigate to:
-- **Storefront**: [http://127.0.0.1:5000](http://127.0.0.1:5000)
-- **Admin Portal**: [http://127.0.0.1:5000/admin](http://127.0.0.1:5000/admin)
+Open http://127.0.0.1:5000. To view it on an Android phone, connect the phone to the same Wi-Fi and open `http://<your-computer-ip>:5000`.
 
----
-
-## 🔑 Demo Credentials
-
+## Demo logins
 | Role | Email | Password |
-| :--- | :--- | :--- |
-| **Admin Executive** | `admin@aurastudios.com` | `admin` |
-| **Demo Customer** | `user@aurastudios.com` | `user` |
+| --- | --- | --- |
+| Admin (`/admin`) | admin@aurastudios.com | admin |
+| Customer | user@aurastudios.com | user |
 
-> *Promo Code:* Apply `AURA20` in the cart or checkout to get **20% OFF** your order!
+Promo codes: `AURA20` (20% off over $50), `BONKERS10` (10% off over $30), `VIPDROP` (25% off over $100). Free shipping over $150, otherwise $15.
 
----
+**Before going live:** change the demo passwords, set `FLASK_SECRET_KEY` in `.env`, and run behind gunicorn (`gunicorn app:app`).
 
-## ☁️ Supabase Cloud Setup (Optional)
+## Tests
+```bash
+python test_app.py
+```
 
-The website works immediately out of the box using its internal database engine. If you want to connect to a live Supabase project:
+## Supabase (optional)
+Run `schema.sql` in your Supabase SQL editor, then put `SUPABASE_URL` and `SUPABASE_KEY` in `.env`. Without them the app uses the local SQLite database automatically.
 
-1. Create a project on [supabase.com](https://supabase.com).
-2. Open the **SQL Editor** in your Supabase dashboard and run the contents of `schema.sql`.
-3. Copy your project URL and API key.
-4. Create a `.env` file (or copy `.env.example`) and fill in:
-   ```env
-   SUPABASE_URL=https://your-project-id.supabase.co
-   SUPABASE_KEY=your-supabase-anon-or-service-key
-   ```
-5. Restart the server (`python app.py`). AURA STUDIOS will automatically synchronize with your Supabase cloud database!
+## Adding products
+Admin > Products > Add product. Pick a category and colour and a matching product illustration is generated automatically, or paste your own image URL.
+
+## Motion & interaction layer
+All animation lives in `static/css/animations.css` and `static/js/animations.js` (no libraries). Remove the matching `<link>`/`<script>` tags in `templates/base.html` to turn it off. It respects `prefers-reduced-motion`.
+Highlights: intro curtain (first visit per session), word-by-word hero headline, typewriter word, floating mouse-parallax hero art, scrolling ticker and marquee, scroll-reveal with stagger, count-up stats, 3D tilt + glare on product cards, magnetic buttons, ripple clicks, cursor glow, auto-hiding blurred header, scroll progress bar, back-to-top, animated filtering/sorting, heart burst, fly-to-bag, animated bag totals, confetti at free shipping, product-page hover zoom, page fade transitions.
+
+## Brown glass theme + characters
+`static/css/glass.css` is the brown / off-white frosted-glass theme (change the colour variables at the top). `static/css/world.css` + `static/js/world.js` add:
+- **Buddies**: five original animated characters (eyes follow the cursor, blink, wave, hop and talk when tapped). They live in the hero, the footer, the sidebar, the "Shop by vibe" tiles and down the page background (they dodge text automatically). Edit their lines in `LINES` and looks in `SPECS` inside `world.js`.
+- **Floating ribbons** (fixed, drift and lean as you scroll) and **crossing strips** under the hero.
+- **Header** (floating glass pill with search), **slide-in sidebar**, **mobile dock**, **Trending slider**, and a full **footer** (newsletter, links, trust row).
+Social icons in the footer use `href="#"`: put your real profile links in `templates/base.html`.
+Everything respects `prefers-reduced-motion`. Remove the `world.css` / `world.js` tags in `base.html` to switch the layer off.

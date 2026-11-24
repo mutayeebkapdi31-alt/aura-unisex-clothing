@@ -2,426 +2,355 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}AURA STUDIOS | High Fashion Unisex Streetwear & Luxury Pret{% endblock %}</title>
-  
-  <!-- Favicon -->
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✦</text></svg>">
-  
-  <!-- CSS Stylesheets -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f0e6">
+  <meta name="color-scheme" content="light">
+  <title>{% block title %}AURA STUDIOS | Unisex Clothing{% endblock %}</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%235a3825'/%3E%3Ctext x='32' y='43' text-anchor='middle' font-family='Arial' font-weight='700' font-size='34' fill='white'%3EA%3C/text%3E%3C/svg%3E">
+  <script>
+    (function () {
+      var d = document.documentElement;
+      d.classList.add('fx');
+      try { if (!sessionStorage.getItem('aura_seen') && !matchMedia('(prefers-reduced-motion: reduce)').matches) { d.classList.add('splash'); sessionStorage.setItem('aura_seen', '1'); } } catch (e) {}
+    })();
+  </script>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-  
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/glass.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/world.css') }}">
 </head>
 <body>
+  <div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
 
-  <!-- 1. ANNOUNCEMENT MARQUEE BAR (Bonkers Vibe) -->
-  <div class="announcement-bar">
-    <div class="marquee-track">
-      <div class="marquee-content">
-        <span>DROP 04 IS LIVE • ARCHITECTURAL STREETWEAR</span>
-        <span>FREE WORLDWIDE SHIPPING OVER $150</span>
-        <span>USE CODE: AURA20 FOR 20% OFF</span>
-        <span>HEAVYWEIGHT 460 GSM FRENCH TERRY</span>
-        <span>GENDERLESS SILHOUETTES FOR EVERYONE</span>
-        <span>LIMITED EDITION RUN • NO RESTOCKS</span>
-      </div>
-      <div class="marquee-content">
-        <span>DROP 04 IS LIVE • ARCHITECTURAL STREETWEAR</span>
-        <span>FREE WORLDWIDE SHIPPING OVER $150</span>
-        <span>USE CODE: AURA20 FOR 20% OFF</span>
-        <span>HEAVYWEIGHT 460 GSM FRENCH TERRY</span>
-        <span>GENDERLESS SILHOUETTES FOR EVERYONE</span>
-        <span>LIMITED EDITION RUN • NO RESTOCKS</span>
-      </div>
+  <!-- Icon sprite (inline, no external requests) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21.2l7.8-7.7 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></symbol>
+    <symbol id="i-bag" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5M5.5 10v10h13V10M10 20v-6h4v6"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M18 6l-2.5 2.5M8.5 15.5 6 18"/></symbol>
+    <symbol id="i-ruler" viewBox="0 0 24 24"><path d="m3 17 14-14 4 4L7 21zM8 12l2 2M11 9l2 2M14 6l2 2"/></symbol>
+    <symbol id="i-left" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+    <symbol id="i-right" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+    <symbol id="i-truck" viewBox="0 0 24 24"><path d="M2 6h11v10H2zM13 9h4l3 3v4h-7M6.5 19a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM16.5 19a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/></symbol>
+    <symbol id="i-return" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-shirt" viewBox="0 0 24 24"><path d="M8 3 3 6l2 4 3-1v12h8V9l3 1 2-4-5-3a4 4 0 0 1-8 0z"/></symbol>
+    <symbol id="i-insta" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.2 6.8h.01"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="m10 9.5 5 2.5-5 2.5z"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-10.5a6.5 6.5 0 0 1 13 0C18.5 15.4 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.3"/></symbol>
+    <symbol id="i-orders" viewBox="0 0 24 24"><path d="M6 3h12l2 4v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7zM4 7h16M9 11h6"/></symbol>
+  </svg>
+
+  <!-- Background world: characters, stars and floating ribbons (decorative) -->
+  <div class="world" aria-hidden="false"></div>
+  <div class="ribbons" aria-hidden="true">
+    <div class="rib r1"><div class="rib-track">{% for n in range(10) %}<span>Heavyweight</span><span>Unisex</span><span>Built to last</span>{% endfor %}</div></div>
+    <div class="rib r2"><div class="rib-track">{% for n in range(10) %}<span>Brown</span><span>Off-white</span><span>All sizes</span>{% endfor %}</div></div>
+    <div class="rib r3"><div class="rib-track">{% for n in range(10) %}<span>New drop</span><span>Free shipping</span><span>AURA</span>{% endfor %}</div></div>
+  </div>
+
+  <div class="topbar" aria-label="Free shipping over $150. Code AURA20 for 20% off.">
+    <div class="ticker" aria-hidden="true">
+      {% for n in range(8) %}
+        <span>Free shipping over $150</span>
+        <span>Code <strong>AURA20</strong> for 20% off</span>
+        <span>30-day easy returns</span>
+      {% endfor %}
     </div>
   </div>
 
-  <!-- 2. STICKY HEADER (Zara Minimalist + Brutalist Fashion) -->
   <header class="site-header">
     <div class="container header-inner">
-      <!-- Logo -->
-      <a href="{{ url_for('index') }}" class="logo-brand">
-        AURA <span style="font-weight: 300;">STUDIOS</span>
-        <span class="logo-badge">UNISEX</span>
+      <button class="icon-btn menu-toggle" id="sideToggle" data-open-side aria-label="Open menu" aria-controls="sideBar">
+        <svg class="i"><use href="#i-menu"/></svg>
+      </button>
+      <a href="{{ url_for('index') }}" class="logo" aria-label="AURA home">
+        <span class="logo-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><ellipse cx="8.5" cy="11" rx="2.3" ry="2.7" fill="#fff"/><ellipse cx="15.5" cy="11" rx="2.3" ry="2.7" fill="#fff"/><circle cx="8.9" cy="11.5" r="1.2" fill="#2e1d14"/><circle cx="15.9" cy="11.5" r="1.2" fill="#2e1d14"/><path d="M9.5 16q2.5 2 5 0" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/><path d="M5 7.5Q12 1 19 7.5" fill="none" stroke="#f4ebdd" stroke-width="2.2" stroke-linecap="round"/></svg></span>AURA
       </a>
 
-      <!-- Navigation -->
-      <nav class="nav-container">
-        <ul class="nav-links">
-          <li><a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' and not request.args.get('category') %}active{% endif %}">Collection</a></li>
-          <li><a href="{{ url_for('index', category='Shirts') }}" class="nav-link {% if request.args.get('category') == 'Shirts' %}active{% endif %}">Shirts</a></li>
-          <li><a href="{{ url_for('index', category='T-Shirts') }}" class="nav-link {% if request.args.get('category') == 'T-Shirts' %}active{% endif %}">T-Shirts</a></li>
-          <li><a href="{{ url_for('index', category='Pants') }}" class="nav-link {% if request.args.get('category') == 'Pants' %}active{% endif %}">Pants</a></li>
-          <li><a href="{{ url_for('index', category='Hoodies') }}" class="nav-link {% if request.args.get('category') == 'Hoodies' %}active{% endif %}">Hoodies</a></li>
-          <li><a href="{{ url_for('index', category='Sweatshirts') }}" class="nav-link {% if request.args.get('category') == 'Sweatshirts' %}active{% endif %}">Sweatshirts</a></li>
-          <li><a href="{{ url_for('lookbook') }}" class="nav-link {% if request.endpoint == 'lookbook' %}active{% endif %}">Lookbook</a></li>
-        </ul>
+      <nav class="main-nav" id="mainNav" aria-label="Main">
+        <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' and not request.args.get('category') %}active{% endif %}">Shop all</a>
+        {% for c in categories %}
+          <a href="{{ url_for('index', category=c) }}" class="nav-cat {% if request.args.get('category') == c %}active{% endif %}">{{ c }}</a>
+        {% endfor %}
+        <a href="{{ url_for('lookbook') }}" class="{% if request.endpoint == 'lookbook' %}active{% endif %}">Looks</a>
       </nav>
 
-      <!-- Action Buttons -->
-      <div class="header-actions">
-        <!-- Fit Advisor Trigger -->
-        <button class="btn-admin-pill" onclick="openFitAdvisor()" title="Find Your Fit">
-          <i data-lucide="sparkles" style="width: 14px; height: 14px; color: var(--accent-neon);"></i>
-          <span>Fit Advisor</span>
-        </button>
-
-        <!-- Wishlist -->
-        <button class="action-btn" onclick="openWishlistDrawer()" title="Wishlist">
-          <i data-lucide="heart" style="width: 18px; height: 18px;"></i>
-          <span class="badge-count" id="headerWishlistCount" style="display: none;">0</span>
-        </button>
-
-        <!-- Cart Drawer Toggle -->
-        <button class="action-btn" onclick="openCartDrawer()" title="Bag">
-          <i data-lucide="shopping-bag" style="width: 18px; height: 18px;"></i>
-          <span class="badge-count" id="headerCartCount" style="display: none;">0</span>
-        </button>
-
-        <!-- User Profile or Login -->
-        {% if current_user %}
-          <a href="{{ url_for('account') }}" class="action-btn" title="My Account">
-            <i data-lucide="user-check" style="width: 18px; height: 18px; color: var(--accent-neon);"></i>
-          </a>
-        {% else %}
-          <button class="action-btn" onclick="openAuthModal()" title="Account">
-            <i data-lucide="user" style="width: 18px; height: 18px;"></i>
-          </button>
-        {% endif %}
-
-        <!-- Admin Portal Direct Link -->
-        <a href="{{ url_for('admin_portal') }}" class="btn-admin-pill" style="border-color: rgba(255,255,255,0.2);">
-          <i data-lucide="shield" style="width: 13px; height: 13px;"></i>
-          <span>Admin</span>
-        </a>
-      </div>
+      <a class="icon-btn search-btn" href="{{ url_for('index') }}#search" data-search aria-label="Search products"><svg class="i"><use href="#i-search"/></svg></a>
+      <button class="icon-btn hide-sm" onclick="openWishlistDrawer()" aria-label="Saved items">
+        <svg class="i"><use href="#i-heart"/></svg>
+        <span class="count-badge" id="headerWishlistCount">0</span>
+      </button>
+      <button class="icon-btn" onclick="openCartDrawer()" aria-label="Shopping bag">
+        <svg class="i"><use href="#i-bag"/></svg>
+        <span class="count-badge" id="headerCartCount">0</span>
+      </button>
+      {% if current_user %}
+        <a href="{{ url_for('account') }}" class="icon-btn hide-sm" aria-label="My account"><svg class="i"><use href="#i-user"/></svg></a>
+      {% else %}
+        <button class="icon-btn hide-sm" onclick="openAuthModal()" aria-label="Sign in"><svg class="i"><use href="#i-user"/></svg></button>
+      {% endif %}
     </div>
   </header>
 
-  <!-- 3. MAIN CONTENT BODY -->
   <main>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}<div class="container"><div class="note" style="margin-top:14px">{{ messages[0] }}</div></div>{% endif %}
+    {% endwith %}
     {% block content %}{% endblock %}
   </main>
 
-  <!-- 4. SLIDE-OUT CART DRAWER -->
-  <div class="cart-drawer-overlay" id="cartDrawerOverlay"></div>
-  <aside class="side-drawer" id="cartDrawer">
-    <div class="drawer-header">
-      <div class="drawer-title">
-        <i data-lucide="shopping-bag" style="color: var(--accent-neon); width: 22px;"></i>
-        <span>Shopping Bag</span>
+  <!-- Overlays -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- Sidebar (slides in from the left) -->
+  {% set art = {'Hoodies': ('hoodie','6b4a36',''), 'T-Shirts': ('tee','d9c4a2',''), 'Pants': ('pants','3a2a20','cargo'), 'Sweatshirts': ('sweatshirt','a67855',''), 'Shirts': ('shirt','f1efe9','')} %}
+  <aside class="drawer side" id="sideBar" aria-label="Menu" aria-hidden="true">
+    <div class="side-head">
+      <div data-buddy="biscuit"></div>
+      <div>
+        <div class="side-hi">Welcome</div>
+        <div class="side-name">Hi, {{ (current_user.full_name or 'friend').split(' ')[0] if current_user else 'friend' }}!</div>
       </div>
-      <button class="drawer-close-btn" id="cartCloseBtn">✕</button>
+      <button class="icon-btn" data-close aria-label="Close menu"><svg class="i"><use href="#i-close"/></svg></button>
     </div>
-
-    <!-- Free Shipping Progress Tracker -->
-    <div class="shipping-progress-container">
-      <div class="shipping-status-text" id="shippingStatusMsg">
-        Add $150.00 for FREE Worldwide Express Shipping
+    <div class="side-body">
+      <div class="side-group">
+        <h4>Shop by category</h4>
+        <a class="side-link" href="{{ url_for('index') }}#storeSection"><span class="si"><svg class="i"><use href="#i-grid"/></svg></span>All products<span class="go">→</span></a>
+        {% for c in categories %}{% set a = art.get(c) %}
+        <a class="side-link {% if request.args.get('category') == c %}active{% endif %}" href="{{ url_for('index', category=c, _anchor='storeSection') }}">
+          <span class="thumb-g">{% if a %}<img src="/img/{{ a[0] }}/{{ a[1] }}.svg?t=1{% if a[2] %}&amp;s={{ a[2] }}{% endif %}" alt="" loading="lazy">{% endif %}</span>{{ c }}<span class="go">→</span>
+        </a>
+        {% endfor %}
       </div>
-      <div class="progress-track">
-        <div class="progress-fill" id="shippingProgressFill" style="width: 0%;"></div>
+      <div class="side-group">
+        <h4>Explore</h4>
+        <a class="side-link {% if request.endpoint == 'lookbook' %}active{% endif %}" href="{{ url_for('lookbook') }}"><span class="si"><svg class="i"><use href="#i-spark"/></svg></span>Looks<span class="go">→</span></a>
+        <button type="button" class="side-link" onclick="openFitAdvisor()"><span class="si"><svg class="i"><use href="#i-ruler"/></svg></span>Size guide<span class="go">→</span></button>
+        <button type="button" class="side-link" onclick="openWishlistDrawer()"><span class="si"><svg class="i"><use href="#i-heart"/></svg></span>Saved items<span class="go">→</span></button>
+        <button type="button" class="side-link" onclick="openCartDrawer()"><span class="si"><svg class="i"><use href="#i-bag"/></svg></span>Your bag<span class="go">→</span></button>
+      </div>
+      <div class="side-promo">
+        <b>20% off over $50</b>
+        <p>Tap to copy, paste it in your bag.</p>
+        <button type="button" data-side-copy="AURA20" aria-label="Copy promo code AURA20">AURA20 <small>Copy</small></button>
+      </div>
+      <div class="side-group">
+        <h4>Account</h4>
+        {% if current_user %}
+          <a class="side-link" href="{{ url_for('account') }}"><span class="si"><svg class="i"><use href="#i-orders"/></svg></span>Orders &amp; account<span class="go">→</span></a>
+          {% if current_user.role == 'admin' %}<a class="side-link" href="{{ url_for('admin_portal') }}"><span class="si"><svg class="i"><use href="#i-grid"/></svg></span>Admin dashboard<span class="go">→</span></a>{% endif %}
+        {% else %}
+          <button type="button" class="side-link" onclick="openAuthModal()"><span class="si"><svg class="i"><use href="#i-user"/></svg></span>Sign in / Create account<span class="go">→</span></button>
+        {% endif %}
       </div>
     </div>
+    <div class="side-foot"><span>© 2026 AURA STUDIOS</span><span>Unisex · S – XXL</span></div>
+  </aside>
 
-    <!-- Cart Items Container -->
-    <div class="drawer-content" id="cartItemsList">
-      <!-- Injected by JavaScript -->
+  <!-- Mobile dock -->
+  <nav class="dock" aria-label="Quick navigation">
+    <a href="{{ url_for('index') }}" data-path="/"><svg class="i"><use href="#i-home"/></svg>Home</a>
+    <a href="{{ url_for('index') }}#storeSection"><svg class="i"><use href="#i-grid"/></svg>Shop</a>
+    <a href="{{ url_for('lookbook') }}" data-path="/lookbook"><svg class="i"><use href="#i-spark"/></svg>Looks</a>
+    <button type="button" onclick="openWishlistDrawer()" aria-label="Saved items"><svg class="i"><use href="#i-heart"/></svg>Saved<span class="count-badge" id="dockWishCount">0</span></button>
+    {% if current_user %}
+      <a href="{{ url_for('account') }}" data-path="/account"><svg class="i"><use href="#i-user"/></svg>Account</a>
+    {% else %}
+      <button type="button" onclick="openAuthModal()"><svg class="i"><use href="#i-user"/></svg>Sign in</button>
+    {% endif %}
+  </nav>
+
+  <!-- Bag drawer -->
+  <aside class="drawer" id="cartDrawer" aria-label="Shopping bag" aria-hidden="true">
+    <div class="drawer-head">
+      <h3>Bag</h3>
+      <button class="icon-btn" data-close aria-label="Close bag"><svg class="i"><use href="#i-close"/></svg></button>
     </div>
-
-    <!-- Empty Cart State -->
-    <div id="cartEmptyState" style="display: none; padding: 4rem 2rem; text-align: center;">
-      <i data-lucide="package-open" style="width: 56px; height: 56px; color: var(--text-muted); margin: 0 auto 1.5rem;"></i>
-      <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Your Bag is Empty</h3>
-      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 2rem;">Explore the latest unisex drops to fill your wardrobe.</p>
-      <button class="btn-primary" onclick="closeCartDrawer()">Shop New Drops</button>
+    <div class="ship-meter" id="shipMeter">
+      <span id="shipMsg"></span>
+      <div class="meter"><div id="shipFill"></div></div>
     </div>
-
-    <!-- Cart Footer & Totals -->
-    <div class="drawer-footer" id="cartDrawerFooter">
+    <div class="drawer-body" id="cartItems"></div>
+    <div class="empty-state" id="cartEmpty" style="display:none">
+      <h3>Your bag is empty</h3>
+      <p>Add something you like and it will show up here.</p>
+      <button class="btn" data-close>Continue shopping</button>
+    </div>
+    <div class="drawer-foot" id="cartFoot">
       <div class="promo-row">
-        <input type="text" class="promo-input" id="promoCodeInput" placeholder="PROMO CODE (e.g. AURA20)">
-        <button class="btn-apply-promo" onclick="applyPromoCode()">Apply</button>
+        <input class="input" id="promoInput" placeholder="Promo code" autocapitalize="characters" autocomplete="off" aria-label="Promo code">
+        <button class="btn btn-outline" onclick="applyPromoCode('promoInput')">Apply</button>
       </div>
-
-      <div class="cost-row">
-        <span>Subtotal</span>
-        <span id="cartSubtotalDisplay">$0.00</span>
-      </div>
-      <div class="cost-row" id="cartDiscountRow" style="display: none; color: var(--accent-neon);">
-        <span>Discount</span>
-        <span id="cartDiscountValue">-$0.00</span>
-      </div>
-      <div class="cost-row">
-        <span>Worldwide Shipping</span>
-        <span id="cartShippingDisplay">$0.00</span>
-      </div>
-      <div class="cost-row total-row">
-        <span>Estimated Total</span>
-        <span id="cartTotalDisplay">$0.00</span>
-      </div>
-
-      <a href="{{ url_for('checkout') }}" class="btn-primary btn-checkout-drawer">
-        <span>Checkout Securely</span>
-        <i data-lucide="arrow-right" style="width: 18px; height: 18px;"></i>
-      </a>
+      <div class="cost-row"><span>Subtotal</span><span id="cartSubtotal">$0.00</span></div>
+      <div class="cost-row" id="cartDiscountRow" style="display:none"><span id="cartDiscountLabel">Discount</span><span id="cartDiscount">-$0.00</span></div>
+      <div class="cost-row"><span>Shipping</span><span id="cartShipping">$0.00</span></div>
+      <div class="cost-row total"><span>Total</span><span id="cartTotal">$0.00</span></div>
+      <a href="{{ url_for('checkout') }}" class="btn btn-block" style="margin-top:12px">Checkout</a>
     </div>
   </aside>
 
-  <!-- 5. SLIDE-OUT WISHLIST DRAWER -->
-  <div class="wishlist-drawer-overlay" id="wishlistDrawerOverlay"></div>
-  <aside class="side-drawer" id="wishlistDrawer">
-    <div class="drawer-header">
-      <div class="drawer-title">
-        <i data-lucide="heart" style="color: #ff3366; width: 22px;"></i>
-        <span>Saved Items</span>
-      </div>
-      <button class="drawer-close-btn" id="wishlistCloseBtn">✕</button>
+  <!-- Saved items drawer -->
+  <aside class="drawer" id="wishlistDrawer" aria-label="Saved items" aria-hidden="true">
+    <div class="drawer-head">
+      <h3>Saved items</h3>
+      <button class="icon-btn" data-close aria-label="Close saved items"><svg class="i"><use href="#i-close"/></svg></button>
     </div>
-
-    <div class="drawer-content" id="wishlistItemsList">
-      <!-- Injected by JS -->
-    </div>
-
-    <div id="wishlistEmptyState" style="display: none; padding: 4rem 2rem; text-align: center;">
-      <i data-lucide="heart-off" style="width: 56px; height: 56px; color: var(--text-muted); margin: 0 auto 1.5rem;"></i>
-      <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Your Wishlist is Empty</h3>
-      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 2rem;">Save your favorite silhouettes to keep an eye on stock.</p>
-      <button class="btn-secondary" onclick="closeWishlistDrawer()">Explore Catalog</button>
+    <div class="drawer-body" id="wishlistItems"></div>
+    <div class="empty-state" id="wishlistEmpty" style="display:none">
+      <h3>Nothing saved yet</h3>
+      <p>Tap the heart on a product to save it.</p>
+      <button class="btn btn-outline" data-close>Browse products</button>
     </div>
   </aside>
 
-  <!-- 6. GLOBAL BACKDROP -->
-  <div class="modal-backdrop" id="modalBackdrop"></div>
-
-  <!-- 7. QUICK VIEW MODAL -->
-  <div class="modal-window" id="quickViewModal">
-    <button class="modal-close-trigger" onclick="closeQuickView()">✕</button>
-    <div class="quick-view-layout">
-      <div class="quick-view-gallery">
-        <img id="qvImg" src="" alt="Product Detail">
-      </div>
-      <div class="quick-view-body">
-        <div style="font-family: var(--font-tech); font-size: 0.75rem; color: var(--accent-neon); text-transform: uppercase; margin-bottom: 0.4rem;" id="qvCategory">
-          STREETWEAR • UNISEX
-        </div>
-        <h2 style="font-size: 1.6rem; margin-bottom: 0.75rem;" id="qvTitle">Product Name</h2>
-        <div style="font-family: var(--font-tech); font-size: 1.4rem; font-weight: 800; margin-bottom: 1.25rem;" id="qvPrice">$0.00</div>
-        
-        <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;" id="qvDesc"></p>
-
-        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; font-family: var(--font-tech); font-size: 0.75rem;">
-          <span style="background: rgba(255,255,255,0.06); padding: 0.35rem 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);" id="qvFabric">
-            460 GSM French Terry
-          </span>
-          <span style="background: rgba(255,255,255,0.06); padding: 0.35rem 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);" id="qvFit">
-            Oversized Boxy Fit
-          </span>
-        </div>
-
-        <div style="margin-bottom: 1.5rem;">
-          <div style="font-family: var(--font-tech); font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem;">
-            Select Unisex Size:
-          </div>
-          <div id="qvSizes" style="display: flex; gap: 0.5rem;"></div>
-        </div>
-
-        <button class="btn-primary" id="qvAddBtn" style="width: 100%;">
-          <span>Add to Bag</span>
-          <i data-lucide="plus" style="width: 18px; height: 18px;"></i>
-        </button>
+  <!-- Quick view sheet -->
+  <div class="sheet wide" id="quickViewModal" role="dialog" aria-modal="true" aria-label="Quick view" aria-hidden="true">
+    <button class="sheet-close" data-close aria-label="Close"><svg class="i"><use href="#i-close"/></svg></button>
+    <div class="qv">
+      <img id="qvImg" src="" alt="">
+      <div class="qv-body">
+        <div class="muted" style="font-size:13px" id="qvCategory"></div>
+        <h2 id="qvTitle" style="margin:4px 0 6px"></h2>
+        <div class="price" id="qvPrice" style="font-size:18px"></div>
+        <p class="muted" id="qvDesc" style="font-size:14px;margin-top:10px"></p>
+        <div class="label">Size</div>
+        <div class="chips-row" id="qvSizes"></div>
+        <button class="btn btn-block" id="qvAddBtn" style="margin-top:20px">Add to bag</button>
+        <a class="link-btn" id="qvLink" href="#" style="display:inline-block;margin-top:14px">View full details</a>
       </div>
     </div>
   </div>
 
-  <!-- 8. UNISEX FIT ADVISOR MODAL -->
-  <div class="modal-window" id="fitAdvisorModal" style="max-width: 600px;">
-    <button class="modal-close-trigger" onclick="closeFitAdvisor()">✕</button>
-    <div class="fit-advisor-box">
-      <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
-        <i data-lucide="sparkles" style="color: var(--accent-neon); width: 28px; height: 28px;"></i>
-        <h2 style="font-size: 1.5rem;">Unisex Size & Fit Advisor</h2>
-      </div>
-      <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.75rem;">
-        Because all AURA garments are gender-neutral with signature boxy drop shoulders, use our algorithmic sizing calculator for your desired drape.
-      </p>
+  <!-- Size guide sheet -->
+  <div class="sheet" id="fitAdvisorModal" role="dialog" aria-modal="true" aria-label="Size guide" aria-hidden="true">
+    <button class="sheet-close" data-close aria-label="Close"><svg class="i"><use href="#i-close"/></svg></button>
+    <div class="sheet-pad">
+      <h2>Size guide</h2>
+      <p class="muted" style="font-size:14px">All pieces are unisex with a relaxed, boxy cut. Tell us your height and weight for a suggestion.</p>
 
-      <!-- Height Slider -->
-      <div class="fit-slider-group">
-        <div class="fit-slider-label">
-          <span>Your Height</span>
-          <span id="heightValue" style="color: var(--accent-neon);">175 cm (5'9")</span>
-        </div>
-        <input type="range" class="fit-range-input" id="heightSlider" min="150" max="205" value="175">
+      <div class="range-label"><span>Height</span><b id="heightValue">175 cm</b></div>
+      <input type="range" id="heightSlider" min="150" max="205" value="175" aria-label="Height in centimetres">
+      <div class="range-label"><span>Weight</span><b id="weightValue">70 kg</b></div>
+      <input type="range" id="weightSlider" min="45" max="120" value="70" aria-label="Weight in kilograms">
+
+      <div class="label">Preferred fit</div>
+      <div class="radio-row">
+        <label class="radio-card"><input type="radio" name="fitPref" value="snug"> Regular</label>
+        <label class="radio-card"><input type="radio" name="fitPref" value="boxy" checked> Oversized</label>
       </div>
 
-      <!-- Weight Slider -->
-      <div class="fit-slider-group">
-        <div class="fit-slider-label">
-          <span>Your Weight</span>
-          <span id="weightValue" style="color: var(--accent-neon);">70 kg (154 lbs)</span>
-        </div>
-        <input type="range" class="fit-range-input" id="weightSlider" min="45" max="120" value="70">
-      </div>
-
-      <!-- Fit Aesthetic Preference -->
-      <div style="margin-top: 1.5rem;">
-        <div style="font-family: var(--font-tech); font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.6rem;">
-          Preferred Aesthetic Silhouette:
-        </div>
-        <div style="display: flex; gap: 1rem;">
-          <label style="flex: 1; display: flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.05); padding: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); cursor: pointer; font-size: 0.8rem;">
-            <input type="radio" name="fitPref" value="snug">
-            <span>Tailored Clean</span>
-          </label>
-          <label style="flex: 1; display: flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.05); padding: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); cursor: pointer; font-size: 0.8rem;">
-            <input type="radio" name="fitPref" value="boxy" checked>
-            <span>Boxy Oversized</span>
-          </label>
-        </div>
-      </div>
-
-      <!-- Recommendation Display -->
-      <div class="recommendation-result">
-        <div style="font-family: var(--font-tech); font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted);">
-          Your Recommended Unisex Size
-        </div>
-        <div class="rec-size-badge" id="recSizeDisplay">L</div>
-        <p style="font-size: 0.82rem; color: var(--text-main);" id="recSizeNote">
-          We selected Size L for an authentic streetwear drop-shoulder drape.
-        </p>
+      <div class="rec-box">
+        <div class="muted" style="font-size:12px;text-transform:uppercase;letter-spacing:.05em">Suggested size</div>
+        <div class="rec-size" id="recSizeDisplay">L</div>
+        <p style="font-size:13px" id="recSizeNote"></p>
       </div>
     </div>
   </div>
 
-  <!-- 9. AUTH / SIGN IN MODAL -->
-  <div class="modal-window" id="authModal" style="max-width: 460px;">
-    <button class="modal-close-trigger" onclick="closeAuthModal()">✕</button>
-    <div style="padding: 2.5rem;">
-      <h2 style="font-size: 1.7rem; margin-bottom: 0.5rem; text-align: center;">Welcome to AURA</h2>
-      <p style="font-size: 0.85rem; color: var(--text-muted); text-align: center; margin-bottom: 2rem;">
-        Sign in to track orders, manage wishlist, and gain VIP drop access.
-      </p>
-
-      <form id="authLoginForm" onsubmit="handleAuthSubmit(event)">
-        <div style="margin-bottom: 1.25rem;">
-          <label style="display: block; font-family: var(--font-tech); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 0.4rem;">Email</label>
-          <input type="email" id="loginEmail" required class="promo-input" style="width: 100%; text-transform: none;" placeholder="name@domain.com" value="user@aurastudios.com">
-        </div>
-        <div style="margin-bottom: 1.5rem;">
-          <label style="display: block; font-family: var(--font-tech); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 0.4rem;">Password</label>
-          <input type="password" id="loginPassword" required class="promo-input" style="width: 100%; text-transform: none;" placeholder="••••••••" value="user">
-        </div>
-        <button type="submit" class="btn-primary" style="width: 100%; margin-bottom: 1rem;">Sign In</button>
+  <!-- Sign in / register sheet -->
+  <div class="sheet" id="authModal" role="dialog" aria-modal="true" aria-label="Account" aria-hidden="true">
+    <button class="sheet-close" data-close aria-label="Close"><svg class="i"><use href="#i-close"/></svg></button>
+    <div class="sheet-pad">
+      <h2 style="margin-bottom:14px">Your account</h2>
+      <div class="tabs" role="tablist">
+        <button type="button" class="active" id="tabLogin" onclick="switchAuthTab('login')">Sign in</button>
+        <button type="button" id="tabRegister" onclick="switchAuthTab('register')">Create account</button>
+      </div>
+      <form id="authForm" onsubmit="handleAuthSubmit(event)" novalidate>
+        <label class="field" id="nameField" style="display:none"><span>Full name</span>
+          <input class="input" id="authName" autocomplete="name"></label>
+        <label class="field"><span>Email</span>
+          <input class="input" type="email" id="authEmail" autocomplete="email" inputmode="email" required></label>
+        <label class="field"><span>Password</span>
+          <input class="input" type="password" id="authPassword" autocomplete="current-password" required></label>
+        <div class="form-msg" id="authMsg" role="alert"></div>
+        <button type="submit" class="btn btn-block" id="authSubmit">Sign in</button>
       </form>
-
-      <div style="font-size: 0.8rem; color: var(--text-muted); text-align: center; border-top: 1px solid var(--border-subtle); padding-top: 1rem;">
-        Demo Customer: <code>user@aurastudios.com</code> / <code>user</code><br>
-        Demo Admin: <code>admin@aurastudios.com</code> / <code>admin</code>
-      </div>
     </div>
   </div>
 
-  <!-- 10. TOAST CONTAINER -->
-  <div class="toast-container" id="toastContainer"></div>
+  <div class="toasts" id="toastContainer" aria-live="polite"></div>
 
-  <!-- 11. LUXURY FOOTER (Zara / Editorial Blackout) -->
   <footer class="site-footer">
+    <div class="foot-crew">
+      <div data-buddy="mocha"></div><div data-buddy="foam"></div><div data-buddy="latte"></div><div data-buddy="biscuit"></div><div data-buddy="espresso"></div>
+    </div>
     <div class="container">
-      <div class="footer-top-grid">
+      <div class="foot-cta">
         <div>
-          <div class="logo-brand" style="margin-bottom: 1.25rem;">AURA STUDIOS</div>
-          <p style="font-size: 0.85rem; line-height: 1.6; max-width: 340px; margin-bottom: 1.5rem;">
-            An independent unisex luxury pret and streetwear laboratory. Dedicated to gender-neutral silhouettes, 460 GSM heavyweight textiles, and architectural drape.
-          </p>
-          <div style="display: flex; gap: 0.75rem;">
-            <a href="#" class="action-btn" style="width: 36px; height: 36px;"><i data-lucide="instagram" style="width: 16px;"></i></a>
-            <a href="#" class="action-btn" style="width: 36px; height: 36px;"><i data-lucide="twitter" style="width: 16px;"></i></a>
-            <a href="#" class="action-btn" style="width: 36px; height: 36px;"><i data-lucide="youtube" style="width: 16px;"></i></a>
+          <h3>Join the <span>AURA</span> club.</h3>
+          <p>First look at drops, restocks and promo codes. No spam, ever.</p>
+        </div>
+        <form class="news-form" onsubmit="event.preventDefault(); showToast('Thanks, you are subscribed.'); this.reset();">
+          <input class="input" type="email" placeholder="Your email address" required aria-label="Email address">
+          <button class="btn" type="submit">Join</button>
+        </form>
+      </div>
+
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a href="{{ url_for('index') }}" class="logo"><span class="logo-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><ellipse cx="8.5" cy="11" rx="2.3" ry="2.7" fill="#fff"/><ellipse cx="15.5" cy="11" rx="2.3" ry="2.7" fill="#fff"/><circle cx="8.9" cy="11.5" r="1.2" fill="#2e1d14"/><circle cx="15.9" cy="11.5" r="1.2" fill="#2e1d14"/><path d="M9.5 16q2.5 2 5 0" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/><path d="M5 7.5Q12 1 19 7.5" fill="none" stroke="#f4ebdd" stroke-width="2.2" stroke-linecap="round"/></svg></span>AURA STUDIOS</a>
+          <p style="max-width:34ch">Simple, well-made unisex clothing in heavyweight fabrics. One cut, all sizes, built to last.</p>
+          <!-- Put your real profile links in the href values below -->
+          <div class="social">
+            <a href="#" aria-label="Instagram"><svg class="i"><use href="#i-insta"/></svg></a>
+            <a href="#" aria-label="YouTube"><svg class="i"><use href="#i-play"/></svg></a>
+            <a href="#" aria-label="Pinterest"><svg class="i"><use href="#i-pin"/></svg></a>
           </div>
         </div>
-
         <div>
-          <h4 class="footer-col-title">Collections</h4>
-          <ul class="footer-nav-list">
-            <li><a href="{{ url_for('index', category='Shirts') }}">Boxy Shirts</a></li>
-            <li><a href="{{ url_for('index', category='T-Shirts') }}">Heavyweight T-Shirts</a></li>
-            <li><a href="{{ url_for('index', category='Pants') }}">Parachute & Balloon Pants</a></li>
-            <li><a href="{{ url_for('index', category='Hoodies') }}">Heavy Box Hoodies</a></li>
-            <li><a href="{{ url_for('index', category='Sweatshirts') }}">Drop-Shoulder Sweatshirts</a></li>
+          <h4>Shop</h4>
+          <ul>
+            <li><a href="{{ url_for('index') }}#storeSection">All products</a></li>
+            {% for c in categories %}<li><a href="{{ url_for('index', category=c, _anchor='storeSection') }}">{{ c }}</a></li>{% endfor %}
           </ul>
         </div>
-
         <div>
-          <h4 class="footer-col-title">Customer Care</h4>
-          <ul class="footer-nav-list">
-            <li><a href="#" onclick="openFitAdvisor(); return false;">Find Your Fit</a></li>
-            <li><a href="{{ url_for('checkout') }}">Worldwide Shipping</a></li>
-            <li><a href="#">Returns & Exchanges</a></li>
-            <li><a href="#">Order Tracking</a></li>
-            <li><a href="#">Sustainability & GSM Specs</a></li>
+          <h4>Help</h4>
+          <ul>
+            <li><button type="button" onclick="openFitAdvisor()">Size guide</button></li>
+            <li><a href="{{ url_for('account') }}">Orders &amp; tracking</a></li>
+            <li><button type="button" onclick="openWishlistDrawer()">Saved items</button></li>
+            <li><a href="{{ url_for('index') }}#promo">Promo codes</a></li>
           </ul>
         </div>
-
         <div>
-          <h4 class="footer-col-title">VIP Drop Club</h4>
-          <p style="font-size: 0.82rem; margin-bottom: 1rem;">Get 48h priority access to Drop 05 before public release.</p>
-          <form onsubmit="event.preventDefault(); showToast('Subscribed to VIP Drops!', 'success');" style="display: flex; gap: 0.5rem;">
-            <input type="email" placeholder="Your email address" class="promo-input" style="font-size: 0.75rem;" required>
-            <button type="submit" class="btn-primary" style="padding: 0 1rem; font-size: 0.75rem;">Join</button>
-          </form>
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="{{ url_for('lookbook') }}">Looks</a></li>
+            <li><a href="{{ url_for('index') }}#collections">Categories</a></li>
+            <li><a href="{{ url_for('admin_portal') }}">Admin</a></li>
+          </ul>
         </div>
       </div>
 
-      <div class="footer-bottom-row">
-        <div>© 2026 AURA STUDIOS INC. ALL RIGHTS RESERVED.</div>
-        <div style="display: flex; gap: 1.5rem;">
-          <a href="#">PRIVACY POLICY</a>
-          <a href="#">TERMS OF SERVICE</a>
-          <a href="{{ url_for('admin_portal') }}">ADMIN CONSOLE</a>
-        </div>
+      <div class="trust">
+        <div><i><svg class="i"><use href="#i-truck"/></svg></i>Free shipping over $150</div>
+        <div><i><svg class="i"><use href="#i-return"/></svg></i>30-day returns</div>
+        <div><i><svg class="i"><use href="#i-clock"/></svg></i>Ships within 24 h</div>
+        <div><i><svg class="i"><use href="#i-shirt"/></svg></i>Unisex, S to XXL</div>
+      </div>
+
+      <div class="foot-bottom">
+        <span>© 2026 AURA STUDIOS. All rights reserved.</span>
+        <a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">Back to top ↑</a>
       </div>
     </div>
+    <div class="foot-word" aria-hidden="true"><span>AURA</span></div>
   </footer>
 
-  <!-- Scripts -->
+  <script>window.AURA_USER = {{ (current_user or none)|tojson }};</script>
   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-  <script>
-    // Initialize Lucide Icons
-    lucide.createIcons();
-
-    // Quick Auth Form Handler
-    async function handleAuthSubmit(e) {
-      e.preventDefault();
-      const email = document.getElementById('loginEmail').value;
-      const password = document.getElementById('loginPassword').value;
-
-      try {
-        const res = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
-        });
-        const data = await res.json();
-        if (data.success) {
-          showToast(`Welcome back, ${data.user.full_name}!`, 'success');
-          setTimeout(() => {
-            if (data.user.role === 'admin') {
-              window.location.href = '/admin';
-            } else {
-              window.location.reload();
-            }
-          }, 800);
-        } else {
-          showToast(data.error || 'Login failed', 'error');
-        }
-      } catch (err) {
-        showToast('Login error occurred', 'error');
-      }
-    }
-  </script>
+  <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/world.js') }}"></script>
   {% block scripts %}{% endblock %}
 </body>
 </html>

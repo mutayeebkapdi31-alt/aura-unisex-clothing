@@ -10,6 +10,7 @@ import sqlite3
 import datetime
 from typing import Dict, Any, List, Optional
 from werkzeug.security import generate_password_hash, check_password_hash
+from product_art import art_images, kind_for_category, PALETTE
 
 # Try loading dotenv if present
 try:
@@ -53,11 +54,7 @@ DEFAULT_PRODUCTS = [
         "badge": "DROP 04",
         "sizes": ["S", "M", "L", "XL", "XXL"],
         "inventory": {"S": 12, "M": 24, "L": 38, "XL": 19, "XXL": 9},
-        "images": [
-            "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=1000&q=80",
-            "https://images.unsplash.com/photo-1509967419530-da38b4704bc6?auto=format&fit=crop&w=1000&q=80",
-            "https://images.unsplash.com/photo-1578587018452-892bacefd3f2?auto=format&fit=crop&w=1000&q=80"
-        ],
+        "images": art_images("hoodie", "3a3b3e", ""),
         "is_featured": True,
         "is_new_drop": True,
         "rating": 4.9,
@@ -77,10 +74,7 @@ DEFAULT_PRODUCTS = [
         "badge": "BESTSELLER",
         "sizes": ["S", "M", "L", "XL", "XXL"],
         "inventory": {"S": 14, "M": 28, "L": 35, "XL": 18, "XXL": 8},
-        "images": [
-            "https://images.unsplash.com/photo-1509967419530-da38b4704bc6?auto=format&fit=crop&w=1000&q=80",
-            "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=1000&q=80"
-        ],
+        "images": art_images("hoodie", "1b1b1d", "zip"),
         "is_featured": True,
         "is_new_drop": True,
         "rating": 4.8,
@@ -102,10 +96,7 @@ DEFAULT_PRODUCTS = [
         "badge": "DROP 04",
         "sizes": ["S", "M", "L", "XL", "XXL"],
         "inventory": {"S": 16, "M": 30, "L": 42, "XL": 22, "XXL": 10},
-        "images": [
-            "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&w=1000&q=80",
-            "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=1000&q=80"
-        ],
+        "images": art_images("sweatshirt", "6b6f4e", ""),
         "is_featured": True,
         "is_new_drop": True,
         "rating": 4.9,
@@ -125,10 +116,7 @@ DEFAULT_PRODUCTS = [
         "badge": "EXCLUSIVE",
         "sizes": ["S", "M", "L", "XL"],
         "inventory": {"S": 18, "M": 35, "L": 38, "XL": 14},
-        "images": [
-            "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=1000&q=80",
-            "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&w=1000&q=80"
-        ],
+        "images": art_images("sweatshirt", "e4dccb", ""),
         "is_featured": False,
         "is_new_drop": False,
         "rating": 4.8,
@@ -150,10 +138,7 @@ DEFAULT_PRODUCTS = [
         "badge": "LIMITED",
         "sizes": ["S", "M", "L", "XL", "XXL"],
         "inventory": {"S": 20, "M": 45, "L": 50, "XL": 30, "XXL": 12},
-        "images": [
-            "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=1000&q=80",
-            "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=1000&q=80"
-        ],
+        "images": art_images("tee", "7d8466", ""),
         "is_featured": True,
         "is_new_drop": True,
         "rating": 5.0,
@@ -173,10 +158,7 @@ DEFAULT_PRODUCTS = [
         "badge": "ESSENTIAL",
         "sizes": ["S", "M", "L", "XL", "XXL"],
         "inventory": {"S": 25, "M": 50, "L": 55, "XL": 35, "XXL": 15},
-        "images": [
-            "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=1000&q=80",
-            "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=1000&q=80"
-        ],
+        "images": art_images("tee", "1b1b1d", ""),
         "is_featured": True,
         "is_new_drop": False,
         "rating": 4.8,
@@ -198,10 +180,7 @@ DEFAULT_PRODUCTS = [
         "badge": "EDITORIAL",
         "sizes": ["S", "M", "L", "XL"],
         "inventory": {"S": 15, "M": 30, "L": 35, "XL": 18},
-        "images": [
-            "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=1000&q=80",
-            "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=1000&q=80"
-        ],
+        "images": art_images("shirt", "f1efe9", ""),
         "is_featured": True,
         "is_new_drop": True,
         "rating": 4.9,
@@ -221,10 +200,7 @@ DEFAULT_PRODUCTS = [
         "badge": "TRENDING",
         "sizes": ["S", "M", "L", "XL", "XXL"],
         "inventory": {"S": 12, "M": 24, "L": 28, "XL": 15, "XXL": 6},
-        "images": [
-            "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=1000&q=80",
-            "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=1000&q=80"
-        ],
+        "images": art_images("shirt", "8d9499", "utility"),
         "is_featured": False,
         "is_new_drop": False,
         "rating": 4.8,
@@ -246,10 +222,7 @@ DEFAULT_PRODUCTS = [
         "badge": "BESTSELLER",
         "sizes": ["S", "M", "L", "XL"],
         "inventory": {"S": 15, "M": 32, "L": 40, "XL": 14},
-        "images": [
-            "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?auto=format&fit=crop&w=1000&q=80",
-            "https://images.unsplash.com/photo-1517445312882-bc9910d016b7?auto=format&fit=crop&w=1000&q=80"
-        ],
+        "images": art_images("pants", "1b1b1d", "cargo"),
         "is_featured": True,
         "is_new_drop": False,
         "rating": 4.8,
@@ -269,16 +242,54 @@ DEFAULT_PRODUCTS = [
         "badge": "EDITORIAL",
         "sizes": ["S", "M", "L", "XL"],
         "inventory": {"S": 10, "M": 22, "L": 26, "XL": 12},
-        "images": [
-            "https://images.unsplash.com/photo-1517445312882-bc9910d016b7?auto=format&fit=crop&w=1000&q=80",
-            "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?auto=format&fit=crop&w=1000&q=80"
-        ],
+        "images": art_images("pants", "3a3b3e", "balloon"),
         "is_featured": True,
         "is_new_drop": True,
         "rating": 4.9,
         "reviews_count": 58
     }
 ]
+
+ART_BY_ID = {
+    "prod-001": ("hoodie", "3a3b3e", ""),
+    "prod-012": ("hoodie", "1b1b1d", "zip"),
+    "prod-013": ("sweatshirt", "6b6f4e", ""),
+    "prod-014": ("sweatshirt", "e4dccb", ""),
+    "prod-003": ("tee", "7d8466", ""),
+    "prod-008": ("tee", "1b1b1d", ""),
+    "prod-009": ("shirt", "f1efe9", ""),
+    "prod-010": ("shirt", "8d9499", "utility"),
+    "prod-002": ("pants", "1b1b1d", "cargo"),
+    "prod-011": ("pants", "3a3b3e", "balloon"),
+}
+
+
+def _is_local_image(url: str) -> bool:
+    return isinstance(url, str) and (url.startswith("/img/") or url.startswith("data:"))
+
+
+def normalize_images(p: Dict[str, Any]) -> Dict[str, Any]:
+    """Swap legacy external (photo) URLs for the generated product-only artwork."""
+    imgs = p.get("images") or []
+    if isinstance(imgs, str):
+        try:
+            imgs = json.loads(imgs)
+        except Exception:
+            imgs = [imgs]
+    if not imgs or any("unsplash.com" in str(i) for i in imgs):
+        kind, color, style = ART_BY_ID.get(p.get("id"), (kind_for_category(p.get("category")), "3a3b3e", ""))
+        imgs = art_images(kind, color, style)
+    p["images"] = imgs
+    return p
+
+
+def _image_for_item(item: Dict[str, Any]) -> str:
+    img = item.get("product_image") or ""
+    if "unsplash.com" in img or not img:
+        kind, color, style = ART_BY_ID.get(item.get("product_id"), ("tee", "3a3b3e", ""))
+        return art_images(kind, color, style)[0]
+    return img
+
 
 class DatabaseManager:
     def __init__(self):
@@ -431,7 +442,7 @@ class DatabaseManager:
                 {
                     "product_id": "prod-001",
                     "product_name": "Heavyweight Box Hoodie - Acid Wash Charcoal",
-                    "product_image": "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=500&q=80",
+                    "product_image": art_images("hoodie", "3a3b3e", "")[0],
                     "size": "L",
                     "quantity": 1,
                     "unit_price": 110.0,
@@ -440,7 +451,7 @@ class DatabaseManager:
                 {
                     "product_id": "prod-003",
                     "product_name": "Distressed Vintage Graphic Tee - Faded Moss",
-                    "product_image": "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=500&q=80",
+                    "product_image": art_images("tee", "7d8466", "")[0],
                     "size": "M",
                     "quantity": 1,
                     "unit_price": 65.0,
@@ -478,7 +489,7 @@ class DatabaseManager:
                     query = query.ilike("name", f"%{search}%")
                 res = query.execute()
                 if res.data:
-                    return res.data
+                    return [normalize_images(dict(r)) for r in res.data]
             except Exception as e:
                 print(f"Supabase query error: {e}. Using local store.")
 
@@ -522,7 +533,7 @@ class DatabaseManager:
             p['images'] = json.loads(p['images']) if isinstance(p['images'], str) else p['images']
             p['is_featured'] = bool(p['is_featured'])
             p['is_new_drop'] = bool(p['is_new_drop'])
-            products.append(p)
+            products.append(normalize_images(p))
         conn.close()
         return products
 
@@ -531,7 +542,7 @@ class DatabaseManager:
             try:
                 res = supabase_client.table("products").select("*").or_(f"id.eq.{product_id_or_slug},slug.eq.{product_id_or_slug}").execute()
                 if res.data:
-                    return res.data[0]
+                    return normalize_images(dict(res.data[0]))
             except Exception as e:
                 print(f"Supabase get_product error: {e}")
 
@@ -548,15 +559,24 @@ class DatabaseManager:
         p['images'] = json.loads(p['images']) if isinstance(p['images'], str) else p['images']
         p['is_featured'] = bool(p['is_featured'])
         p['is_new_drop'] = bool(p['is_new_drop'])
-        return p
+        return normalize_images(p)
 
     def create_product(self, data: Dict[str, Any]) -> Dict[str, Any]:
         import uuid
         prod_id = f"prod-{uuid.uuid4().hex[:6]}"
-        slug = data.get("slug") or data["name"].lower().replace(" ", "-").replace("/", "-")
-        sizes = data.get("sizes", ["S", "M", "L", "XL", "XXL"])
-        inventory = data.get("inventory", {s: 20 for s in sizes})
-        images = data.get("images", ["https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=1000&q=80"])
+        import re as _re
+        base_slug = data.get("slug") or _re.sub(r"[^a-z0-9]+", "-", data["name"].lower()).strip("-") or "product"
+        slug = base_slug
+        conn0 = self.get_connection()
+        if conn0.execute("SELECT 1 FROM products WHERE slug = ?", (slug,)).fetchone():
+            slug = f"{base_slug}-{prod_id[-4:]}"
+        conn0.close()
+        sizes = data.get("sizes") or ["S", "M", "L", "XL", "XXL"]
+        inventory = data.get("inventory") or {sz: 20 for sz in sizes}
+        images = [i for i in (data.get("images") or []) if i]
+        if not images:
+            color_hex = PALETTE.get(data.get("color", ""), "3a3b3e")
+            images = art_images(kind_for_category(data.get("category")), color_hex, "")
 
         # Try Supabase sync
         if supabase_client:
@@ -565,7 +585,7 @@ class DatabaseManager:
                     "id": prod_id,
                     "name": data["name"],
                     "slug": slug,
-                    "category": data.get("category", "Streetwear"),
+                    "category": data.get("category", "T-Shirts"),
                     "price": float(data.get("price", 99.0)),
                     "compare_at_price": float(data["compare_at_price"]) if data.get("compare_at_price") else None,
                     "description": data.get("description", ""),
@@ -592,12 +612,12 @@ class DatabaseManager:
             is_featured, is_new_drop, rating, reviews_count
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 5.0, 1)
         """, (
-            prod_id, data["name"], slug, data.get("category", "Streetwear"),
+            prod_id, data["name"], slug, data.get("category", "T-Shirts"),
             float(data.get("price", 99.0)), float(data["compare_at_price"]) if data.get("compare_at_price") else None,
             data.get("description", ""), data.get("fit_type", "Oversized Boxy"),
             data.get("fabric_weight", "380 GSM Heavy French Terry"), data.get("gender", "Unisex"),
             data.get("badge", "NEW"), json.dumps(sizes), json.dumps(inventory), json.dumps(images),
-            1 if data.get("is_featured") else 0, 1 if data.get("is_new_drop") else 0
+            1 if data.get("is_featured", True) else 0, 1 if data.get("is_new_drop", True) else 0
         ))
         conn.commit()
         conn.close()
@@ -609,7 +629,7 @@ class DatabaseManager:
         
         updates = []
         params = []
-        for key in ["name", "category", "price", "compare_at_price", "description", "fit_type", "fabric_weight", "badge"]:
+        for key in ["name", "category", "price", "compare_at_price", "description", "fit_type", "fabric_weight", "badge", "gender"]:
             if key in data:
                 updates.append(f"{key} = ?")
                 params.append(data[key])
@@ -659,15 +679,76 @@ class DatabaseManager:
         return True
 
     # ================= ORDERS =================
+    FREE_SHIPPING_THRESHOLD = 150.0
+    SHIPPING_FEE = 15.0
+
+    def price_items(self, raw_items, coupon_code=None):
+        """Build trusted line items from the catalogue. Never trusts client prices."""
+        if not isinstance(raw_items, list) or not raw_items:
+            raise ValueError("Your bag is empty")
+        lines = []
+        for raw in raw_items[:50]:
+            product = self.get_product(str(raw.get("product_id", "")))
+            if not product:
+                raise ValueError("One of the items is no longer available")
+            size = str(raw.get("size", ""))
+            if size not in (product.get("sizes") or []):
+                raise ValueError(f"Size {size or '?'} is not available for {product['name']}")
+            try:
+                qty = int(raw.get("quantity", 1))
+            except (TypeError, ValueError):
+                raise ValueError("Invalid quantity")
+            if qty < 1 or qty > 10:
+                raise ValueError("Quantity must be between 1 and 10")
+            stock = (product.get("inventory") or {}).get(size)
+            if stock is not None and int(stock) < qty:
+                raise ValueError(f"Only {int(stock)} left in size {size} for {product['name']}")
+            unit = float(product["price"])
+            lines.append({
+                "product_id": product["id"],
+                "product_name": product["name"],
+                "product_image": product["images"][0],
+                "size": size,
+                "quantity": qty,
+                "unit_price": unit,
+                "total_price": round(unit * qty, 2),
+            })
+        subtotal = round(sum(l["total_price"] for l in lines), 2)
+        discount = 0.0
+        applied = None
+        if coupon_code:
+            res = self.validate_coupon(coupon_code, subtotal)
+            if res.get("valid"):
+                discount = float(res["discount_amount"])
+                applied = res["code"]
+        shipping = 0.0 if subtotal >= self.FREE_SHIPPING_THRESHOLD else self.SHIPPING_FEE
+        return lines, subtotal, discount, shipping, applied
+
+    def _decrement_stock(self, lines):
+        conn = self.get_connection()
+        cur = conn.cursor()
+        for l in lines:
+            cur.execute("SELECT inventory FROM products WHERE id = ?", (l["product_id"],))
+            row = cur.fetchone()
+            if not row:
+                continue
+            inv = json.loads(row["inventory"]) if row["inventory"] else {}
+            if l["size"] in inv:
+                inv[l["size"]] = max(0, int(inv[l["size"]]) - l["quantity"])
+                cur.execute("UPDATE products SET inventory = ? WHERE id = ?", (json.dumps(inv), l["product_id"]))
+        conn.commit()
+        conn.close()
+
     def create_order(self, data: Dict[str, Any]) -> Dict[str, Any]:
         import random
-        order_id = f"ORD-{random.randint(10000, 99999)}"
+        items, subtotal, discount, shipping, _coupon = self.price_items(data.get("items"), data.get("coupon_code"))
+        total = round(max(0.0, subtotal - discount + shipping), 2)
+        while True:
+            order_id = f"ORD-{random.randint(10000, 99999)}"
+            if not self.get_order(order_id):
+                break
         tracking = f"TRACK-AURA-{random.randint(100000, 999999)}"
-        items = data.get("items", [])
-        subtotal = float(data.get("subtotal", 0.0))
-        discount = float(data.get("discount_amount", 0.0))
-        shipping = float(data.get("shipping_fee", 0.0))
-        total = max(0.0, subtotal - discount + shipping)
+        self._decrement_stock(items)
 
         conn = self.get_connection()
         cur = conn.cursor()
@@ -726,6 +807,8 @@ class DatabaseManager:
         for row in rows:
             o = dict(row)
             o['items'] = json.loads(o['items_json']) if o.get('items_json') else []
+            for it in o['items']:
+                it['product_image'] = _image_for_item(it)
             orders.append(o)
         conn.close()
         return orders
@@ -740,6 +823,8 @@ class DatabaseManager:
             return None
         o = dict(row)
         o['items'] = json.loads(o['items_json']) if o.get('items_json') else []
+        for it in o['items']:
+            it['product_image'] = _image_for_item(it)
         return o
 
     def update_order_status(self, order_id: str, new_status: str) -> bool:
@@ -776,6 +861,7 @@ class DatabaseManager:
             "valid": True,
             "code": c["code"],
             "discount_percent": c["discount_percent"],
+            "min_spend": c["min_spend"],
             "discount_amount": round(discount, 2),
             "message": f"Applied {c['discount_percent']}% discount!"
         }
