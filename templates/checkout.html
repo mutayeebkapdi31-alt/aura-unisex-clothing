@@ -1,170 +1,73 @@
 {% extends "base.html" %}
 
-{% block title %}Checkout • Express Order Review | AURA STUDIOS{% endblock %}
+{% block title %}Checkout | AURA STUDIOS{% endblock %}
 
 {% block content %}
-<div class="container" style="padding: 3.5rem 0 7rem;">
-  <div style="font-family: var(--font-tech); font-size: 0.8rem; color: var(--accent-neon); text-transform: uppercase; font-weight: 700; margin-bottom: 0.5rem;">
-    SECURE 256-BIT ENCRYPTED CHECKOUT
-  </div>
-  <h1 style="font-size: clamp(2rem, 3.5vw, 3rem); margin-bottom: 2.5rem;">Order Review & Dispatch</h1>
+<div class="page">
+  <div class="container">
+    <h1 class="title">Checkout</h1>
 
-  <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 3.5rem; align-items: start;">
-    <!-- Left Column: Checkout Form -->
-    <div>
-      <form id="checkoutForm" onsubmit="handlePlaceOrder(event)">
-        <!-- Step 1: Customer Contact -->
-        <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 2rem; margin-bottom: 2rem;">
-          <h3 style="font-size: 1.2rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
-            <i data-lucide="user" style="width: 20px; color: var(--accent-neon);"></i>
-            <span>1. Contact Details</span>
-          </h3>
-
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-            <div>
-              <label style="display: block; font-family: var(--font-tech); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 0.4rem;">Full Name *</label>
-              <input type="text" id="custName" required class="promo-input" style="width: 100%; text-transform: none;" placeholder="e.g. Jordan Vance" value="Alex Rivera">
-            </div>
-            <div>
-              <label style="display: block; font-family: var(--font-tech); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 0.4rem;">Email Address *</label>
-              <input type="email" id="custEmail" required class="promo-input" style="width: 100%; text-transform: none;" placeholder="jordan@example.com" value="alex@example.com">
-            </div>
-          </div>
-
-          <div>
-            <label style="display: block; font-family: var(--font-tech); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 0.4rem;">Phone (For Courier SMS Tracking) *</label>
-            <input type="tel" id="custPhone" required class="promo-input" style="width: 100%; text-transform: none;" placeholder="+1 (555) 019-2831" value="+1 (555) 019-2831">
+    <div class="checkout">
+      <form id="checkoutForm" onsubmit="handlePlaceOrder(event)" novalidate>
+        <div class="panel">
+          <h3>Contact</h3>
+          <label class="field"><span>Full name</span><input class="input" id="custName" autocomplete="name" required value="{{ current_user.full_name if current_user else '' }}"></label>
+          <div class="grid-2">
+            <label class="field"><span>Email</span><input class="input" type="email" id="custEmail" autocomplete="email" inputmode="email" required value="{{ current_user.email if current_user else '' }}"></label>
+            <label class="field"><span>Phone</span><input class="input" type="tel" id="custPhone" autocomplete="tel" inputmode="tel" required></label>
           </div>
         </div>
 
-        <!-- Step 2: Shipping Destination -->
-        <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 2rem; margin-bottom: 2rem;">
-          <h3 style="font-size: 1.2rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
-            <i data-lucide="map-pin" style="width: 20px; color: var(--accent-neon);"></i>
-            <span>2. Shipping Destination</span>
-          </h3>
-
-          <div style="margin-bottom: 1rem;">
-            <label style="display: block; font-family: var(--font-tech); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 0.4rem;">Street Address *</label>
-            <input type="text" id="custAddress" required class="promo-input" style="width: 100%; text-transform: none;" placeholder="Apartment, suite, street" value="842 Fashion Blvd, Loft 4B">
-          </div>
-
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <div>
-              <label style="display: block; font-family: var(--font-tech); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 0.4rem;">City / Metropolis *</label>
-              <input type="text" id="custCity" required class="promo-input" style="width: 100%; text-transform: none;" placeholder="New York" value="New York">
-            </div>
-            <div>
-              <label style="display: block; font-family: var(--font-tech); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 0.4rem;">Postal / ZIP Code *</label>
-              <input type="text" id="custZip" required class="promo-input" style="width: 100%;" placeholder="10001" value="10001">
-            </div>
+        <div class="panel">
+          <h3>Shipping address</h3>
+          <label class="field"><span>Street address</span><input class="input" id="custAddress" autocomplete="street-address" required></label>
+          <div class="grid-2">
+            <label class="field"><span>City</span><input class="input" id="custCity" autocomplete="address-level2" required></label>
+            <label class="field"><span>Postal code</span><input class="input" id="custZip" autocomplete="postal-code" required></label>
           </div>
         </div>
 
-        <!-- Step 3: Payment Method -->
-        <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 2rem; margin-bottom: 2rem;">
-          <h3 style="font-size: 1.2rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
-            <i data-lucide="credit-card" style="width: 20px; color: var(--accent-neon);"></i>
-            <span>3. Payment Simulation</span>
-          </h3>
-
-          <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
-            <label style="flex: 1; display: flex; align-items: center; gap: 0.6rem; background: rgba(255,255,255,0.06); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--accent-neon); cursor: pointer;">
-              <input type="radio" name="payMethod" value="Card" checked>
-              <span style="font-weight: 700; font-size: 0.85rem;">Credit / Debit Card</span>
-            </label>
-            <label style="flex: 1; display: flex; align-items: center; gap: 0.6rem; background: rgba(255,255,255,0.06); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); cursor: pointer;">
-              <input type="radio" name="payMethod" value="ApplePay">
-              <span style="font-weight: 700; font-size: 0.85rem;">Apple Pay / G-Pay</span>
-            </label>
-            <label style="flex: 1; display: flex; align-items: center; gap: 0.6rem; background: rgba(255,255,255,0.06); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); cursor: pointer;">
-              <input type="radio" name="payMethod" value="COD">
-              <span style="font-weight: 700; font-size: 0.85rem;">Cash on Delivery</span>
-            </label>
+        <div class="panel">
+          <h3>Payment</h3>
+          <div class="radio-row" style="grid-template-columns:1fr">
+            <label class="radio-card"><input type="radio" name="payMethod" value="Card" checked> Card</label>
+            <label class="radio-card"><input type="radio" name="payMethod" value="UPI"> UPI / Wallet</label>
+            <label class="radio-card"><input type="radio" name="payMethod" value="COD"> Cash on delivery</label>
           </div>
-
-          <div style="background: #000; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 1.25rem;">
-            <div style="font-family: var(--font-tech); font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.8rem;">
-              Card Details (Mock Test Mode - Any 16 digits)
-            </div>
-            <input type="text" class="promo-input" style="width: 100%; margin-bottom: 0.75rem;" placeholder="•••• •••• •••• 4242" value="4242 4242 4242 4242">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
-              <input type="text" class="promo-input" placeholder="MM / YY" value="12/28">
-              <input type="text" class="promo-input" placeholder="CVC" value="888">
-            </div>
-          </div>
+          <p class="note" style="margin-top:12px">This is a demo store. No real payment is taken and no card details are collected.</p>
         </div>
 
-        <button type="submit" id="submitOrderBtn" class="btn-primary" style="width: 100%; padding: 1.3rem; font-size: 1.05rem;">
-          <i data-lucide="lock" style="width: 18px; height: 18px;"></i>
-          <span>Authorize & Place Order</span>
-        </button>
+        <div class="form-msg" id="checkoutMsg" role="alert"></div>
+        <button type="submit" id="submitOrderBtn" class="btn btn-block" style="min-height:52px">Place order</button>
       </form>
-    </div>
 
-    <!-- Right Column: Order Summary -->
-    <div>
-      <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 2rem; position: sticky; top: 100px;">
-        <h3 style="font-size: 1.2rem; margin-bottom: 1.5rem;">Bag Summary</h3>
-
-        <div id="checkoutItemsList" style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem; max-height: 350px; overflow-y: auto;">
-          <!-- Injected by JS -->
+      <aside class="summary">
+        <div class="panel">
+          <h3>Order summary</h3>
+          <div id="checkoutItemsList"></div>
+          <div class="promo-row" style="margin-top:14px">
+            <input class="input" id="checkoutPromoInput" placeholder="Promo code" autocapitalize="characters" autocomplete="off" aria-label="Promo code">
+            <button type="button" class="btn btn-outline" onclick="applyPromoCode('checkoutPromoInput')">Apply</button>
+          </div>
+          <div class="cost-row"><span>Subtotal</span><span id="coSubtotal">$0.00</span></div>
+          <div class="cost-row" id="coDiscountRow" style="display:none"><span id="coDiscountLabel">Discount</span><span id="coDiscount">-$0.00</span></div>
+          <div class="cost-row"><span>Shipping</span><span id="coShipping">$0.00</span></div>
+          <div class="cost-row total"><span>Total</span><span id="coTotal">$0.00</span></div>
         </div>
-
-        <!-- Promo Code Input -->
-        <div class="promo-row" style="margin-bottom: 1.5rem;">
-          <input type="text" class="promo-input" id="checkoutPromoInput" placeholder="PROMO (e.g. AURA20)">
-          <button type="button" class="btn-apply-promo" onclick="applyCheckoutPromo()">Apply</button>
-        </div>
-
-        <!-- Breakdown -->
-        <div class="cost-row">
-          <span>Subtotal</span>
-          <span id="coSubtotal">$0.00</span>
-        </div>
-        <div class="cost-row" id="coDiscountRow" style="display: none; color: var(--accent-neon);">
-          <span>Discount Applied</span>
-          <span id="coDiscount">-$0.00</span>
-        </div>
-        <div class="cost-row">
-          <span>Express Shipping</span>
-          <span id="coShipping">$0.00</span>
-        </div>
-        <div class="cost-row total-row">
-          <span>Total To Pay</span>
-          <span id="coTotal">$0.00</span>
-        </div>
-      </div>
+      </aside>
     </div>
   </div>
 </div>
 
-<!-- Order Confirmation Modal -->
-<div class="modal-window" id="orderConfirmModal" style="max-width: 580px; text-align: center;">
-  <div style="padding: 3rem 2rem;">
-    <div style="width: 72px; height: 72px; background: rgba(217, 253, 2, 0.1); border: 2px solid var(--accent-neon); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: var(--accent-neon); font-size: 2rem;">
-      ✓
-    </div>
-    <div style="font-family: var(--font-tech); font-size: 0.8rem; color: var(--accent-neon); font-weight: 700; text-transform: uppercase; margin-bottom: 0.5rem;">
-      ORDER CONFIRMED & DISPATCH PREPARED
-    </div>
-    <h2 style="font-size: 2rem; margin-bottom: 1rem;" id="confirmedOrderId">ORD-89421</h2>
-    <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 1.5rem;">
-      Thank you for acquiring our Drop 04 pieces. A confirmation email with courier tracking has been sent to your inbox.
-    </p>
-
-    <div style="background: rgba(255,255,255,0.04); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 1.25rem; margin-bottom: 2rem; font-family: var(--font-tech); font-size: 0.85rem;">
-      <div style="color: var(--text-muted); margin-bottom: 0.35rem;">Live Tracking Number:</div>
-      <div style="font-weight: 800; color: #fff; letter-spacing: 0.05em;" id="confirmedTrackingId">TRACK-AURA-941829</div>
-    </div>
-
-    <div style="display: flex; gap: 1rem; justify-content: center;">
-      <a href="{{ url_for('account') }}" class="btn-primary" style="font-size: 0.85rem; padding: 0.8rem 1.4rem;">
-        View in My Account
-      </a>
-      <a href="{{ url_for('index') }}" class="btn-secondary" style="font-size: 0.85rem; padding: 0.8rem 1.4rem;">
-        Return to Store
-      </a>
+<div class="sheet" id="orderConfirmModal" role="dialog" aria-modal="true" aria-label="Order confirmed" aria-hidden="true">
+  <div class="success">
+    <div class="tick">✓</div>
+    <h2 style="padding:0">Thank you for your order</h2>
+    <p class="muted" style="margin-top:6px">Order <strong id="confirmedOrderId"></strong></p>
+    <p class="muted" style="font-size:13px">Tracking: <span id="confirmedTrackingId"></span></p>
+    <div class="actions">
+      <a href="{{ url_for('account') }}" class="btn">View my orders</a>
+      <a href="{{ url_for('index') }}" class="btn btn-outline">Keep shopping</a>
     </div>
   </div>
 </div>
@@ -172,133 +75,68 @@
 
 {% block scripts %}
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    renderCheckoutSummary();
-  });
-
   function renderCheckoutSummary() {
-    const container = document.getElementById('checkoutItemsList');
-    if (!container) return;
-
-    if (AURA.cart.length === 0) {
-      container.innerHTML = '<div style="color: var(--text-muted); font-size: 0.85rem;">Your bag is empty. Please add items first.</div>';
-      return;
-    }
-
-    let subtotal = 0;
-    container.innerHTML = AURA.cart.map(item => {
-      const itemTotal = item.price * item.qty;
-      subtotal += itemTotal;
-      return `
-        <div style="display: flex; gap: 1rem; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.75rem;">
-          <img src="${item.image}" style="width: 50px; height: 60px; object-fit: cover; border-radius: var(--radius-sm);">
-          <div style="flex-grow: 1;">
-            <div style="font-size: 0.85rem; font-weight: 700;">${item.name}</div>
-            <div style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-tech);">Qty: ${item.qty} • Size: ${item.size}</div>
-          </div>
-          <div style="font-family: var(--font-tech); font-weight: 700; font-size: 0.9rem;">$${itemTotal.toFixed(2)}</div>
-        </div>
-      `;
-    }).join('');
-
-    let discount = 0;
-    if (AURA.activeCoupon) {
-      discount = (subtotal * AURA.activeCoupon.discount_percent) / 100;
-    }
-    const shipping = subtotal >= AURA.freeShippingThreshold ? 0.00 : 15.00;
-    const total = Math.max(0, subtotal - discount + shipping);
-
-    document.getElementById('coSubtotal').textContent = `$${subtotal.toFixed(2)}`;
-    if (discount > 0) {
-      document.getElementById('coDiscountRow').style.display = 'flex';
-      document.getElementById('coDiscount').textContent = `-$${discount.toFixed(2)} (${AURA.activeCoupon.code})`;
+    const box = document.getElementById('checkoutItemsList');
+    if (!AURA.cart.length) {
+      box.innerHTML = '<p class="muted" style="font-size:14px">Your bag is empty. <a class="link-btn" href="{{ url_for("index") }}">Continue shopping</a></p>';
     } else {
-      document.getElementById('coDiscountRow').style.display = 'none';
+      box.innerHTML = AURA.cart.map(i => `
+        <div class="sum-item">
+          <img src="${esc(i.image)}" alt="">
+          <div>${esc(i.name)}<small>Size ${esc(i.size)} · Qty ${i.qty}</small></div>
+          <b>${money(i.price * i.qty)}</b>
+        </div>`).join('');
     }
-    document.getElementById('coShipping').textContent = shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`;
-    document.getElementById('coTotal').textContent = `$${total.toFixed(2)}`;
-  }
-
-  function applyCheckoutPromo() {
-    const input = document.getElementById('checkoutPromoInput');
-    const code = input.value.trim().toUpperCase();
-    if (code === 'AURA20') {
-      AURA.activeCoupon = { code: 'AURA20', discount_percent: 20 };
-      showToast('Coupon AURA20 applied: 20% discount!', 'success');
-      renderCheckoutSummary();
-    } else {
-      showToast('Invalid coupon code', 'error');
+    const t = getTotals();
+    document.getElementById('coSubtotal').textContent = money(t.subtotal);
+    const row = document.getElementById('coDiscountRow');
+    row.style.display = t.discount > 0 ? 'flex' : 'none';
+    if (t.discount > 0) {
+      document.getElementById('coDiscountLabel').textContent = `Discount (${AURA.coupon.code})`;
+      document.getElementById('coDiscount').textContent = '-' + money(t.discount);
     }
+    document.getElementById('coShipping').textContent = t.shipping === 0 ? 'Free' : money(t.shipping);
+    document.getElementById('coTotal').textContent = money(t.total);
   }
+  document.addEventListener('DOMContentLoaded', renderCheckoutSummary);
+  document.addEventListener('aura:cart', renderCheckoutSummary);
 
   async function handlePlaceOrder(e) {
     e.preventDefault();
-    if (AURA.cart.length === 0) {
-      showToast('Your bag is empty!', 'error');
-      return;
-    }
+    const msg = document.getElementById('checkoutMsg');
+    msg.textContent = '';
+    if (!AURA.cart.length) { msg.textContent = 'Your bag is empty.'; return; }
+
+    const val = id => document.getElementById(id).value.trim();
+    const fields = { customer_name: val('custName'), customer_email: val('custEmail'), customer_phone: val('custPhone'),
+      shipping_address: val('custAddress'), city: val('custCity'), postal_code: val('custZip') };
+    if (Object.values(fields).some(v => !v)) { msg.textContent = 'Please fill in every field.'; return; }
+    if (!/^\S+@\S+\.\S+$/.test(fields.customer_email)) { msg.textContent = 'Please enter a valid email.'; return; }
 
     const btn = document.getElementById('submitOrderBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<span>Processing Dispatch...</span>';
-
-    const subtotal = AURA.cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-    const discount = AURA.activeCoupon ? (subtotal * AURA.activeCoupon.discount_percent) / 100 : 0.0;
-    const shipping = subtotal >= AURA.freeShippingThreshold ? 0.00 : 15.00;
-
-    let selectedPayMethod = 'Card';
-    document.querySelectorAll('input[name="payMethod"]').forEach(r => {
-      if (r.checked) selectedPayMethod = r.value;
-    });
-
-    const payload = {
-      customer_name: document.getElementById('custName').value,
-      customer_email: document.getElementById('custEmail').value,
-      customer_phone: document.getElementById('custPhone').value,
-      shipping_address: document.getElementById('custAddress').value,
-      city: document.getElementById('custCity').value,
-      postal_code: document.getElementById('custZip').value,
-      subtotal: subtotal,
-      discount_amount: discount,
-      shipping_fee: shipping,
-      payment_method: selectedPayMethod,
-      items: AURA.cart.map(i => ({
-        product_id: i.id,
-        product_name: i.name,
-        product_image: i.image,
-        size: i.size,
-        quantity: i.qty,
-        unit_price: i.price,
-        total_price: i.price * i.qty
-      }))
-    };
-
+    btn.disabled = true; btn.textContent = 'Placing order…';
+    const pay = document.querySelector('input[name="payMethod"]:checked')?.value || 'Card';
     try {
       const res = await fetch('/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...fields, payment_method: pay, coupon_code: AURA.coupon ? AURA.coupon.code : '',
+          items: AURA.cart.map(i => ({ product_id: i.id, size: i.size, quantity: i.qty }))
+        })
       });
       const data = await res.json();
       if (data.success) {
         document.getElementById('confirmedOrderId').textContent = data.order.id;
         document.getElementById('confirmedTrackingId').textContent = data.order.tracking_number;
-        
-        // Clear Cart
-        AURA.cart = [];
-        saveCart();
-
-        document.getElementById('modalBackdrop').classList.add('active');
-        document.getElementById('orderConfirmModal').classList.add('active');
+        AURA.cart = []; AURA.coupon = null; save('aura_coupon_v2', null); persistCart();
+        openLayer('orderConfirmModal');
       } else {
-        showToast(data.error || 'Failed to place order', 'error');
-        btn.disabled = false;
-        btn.innerHTML = '<span>Authorize & Place Order</span>';
+        msg.textContent = data.error || 'Could not place the order.';
+        btn.disabled = false; btn.textContent = 'Place order';
       }
     } catch (err) {
-      showToast('Error communicating with checkout server', 'error');
-      btn.disabled = false;
-      btn.innerHTML = '<span>Authorize & Place Order</span>';
+      msg.textContent = 'Network error. Please try again.';
+      btn.disabled = false; btn.textContent = 'Place order';
     }
   }
 </script>
